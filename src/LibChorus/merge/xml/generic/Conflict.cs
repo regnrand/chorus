@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using Autofac;
+using Autofac.Core;
 using Chorus.Utilities.code;
 using Chorus.VcsDrivers;
 using Palaso.IO;
@@ -171,9 +172,9 @@ namespace Chorus.merge.xml.generic
 			try
 			{
 
-			var builder = new Autofac.Builder.ContainerBuilder();
+			var builder = new Autofac.ContainerBuilder();
 
-			Register<RemovedVsEditedElementConflict>(builder);
+			//Register<RemovedVsEditedElementConflict>(builder);
 			Register<AmbiguousInsertConflict>(builder);
 			Register<AmbiguousInsertReorderConflict>(builder);
 			Register<BothEditedAttributeConflict>(builder);
@@ -187,8 +188,24 @@ namespace Chorus.merge.xml.generic
 
 			var container = builder.Build();
 
+			CheckRegistered(container, typeof(AmbiguousInsertConflict));
+			CheckRegistered(container, typeof(AmbiguousInsertReorderConflict));
+			CheckRegistered(container, typeof(BothEditedAttributeConflict));
+			CheckRegistered(container, typeof(BothEditedTextConflict));
+			CheckRegistered(container, typeof(BothReorderedElementConflict));
+			CheckRegistered(container, typeof(RemovedVsEditedElementConflict));
+			CheckRegistered(container, typeof(RemovedVsEditedAttributeConflict));
+			CheckRegistered(container, typeof(RemovedVsEditedTextConflict));
+			CheckRegistered(container, typeof(BothEditedDifferentPartsOfDependentPiecesOfDataWarning));
+			CheckRegistered(container, typeof(UnmergableFileTypeConflict));
+
 			var typeGuid = conflictNode.GetStringAttribute("typeGuid");
-			return container.Resolve<IConflict>(typeGuid, new Parameter[]{new TypedParameter(typeof(XmlNode),conflictNode)});
+			if (!container.IsRegisteredWithName<IConflict>(typeGuid))
+				{
+					throw new ApplicationException(typeGuid + " is not registered");
+				}
+			IConflict conflict = container.ResolveNamed<IConflict>(typeGuid, new TypedParameter(typeof(XmlNode),conflictNode));
+			return conflict;
 			}
 			catch (Exception error)
 			{
@@ -196,10 +213,17 @@ namespace Chorus.merge.xml.generic
 			}
 		}
 
-
-		private static void Register<T>(Autofac.Builder.ContainerBuilder builder)
+		private static void CheckRegistered(IContainer container, Type t)
 		{
-			builder.Register<T>().Named(GetTypeGuid(typeof(T)));
+			if (!container.IsRegisteredWithName<IConflict>(GetTypeGuid(t)))
+			{
+				throw new ApplicationException(t.ToString() + " " + GetTypeGuid(t) + " is not registered");
+			}
+		}
+
+		private static void Register<T>(Autofac.ContainerBuilder builder)
+		{
+			builder.RegisterType<T>().As<IConflict>().Named<IConflict>(GetTypeGuid(typeof(T)));
 		}
 
 		public bool Equals(Conflict other)
