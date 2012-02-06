@@ -187,23 +187,8 @@ namespace Chorus.merge.xml.generic
 			Register<UnmergableFileTypeConflict>(builder);
 
 			var container = builder.Build();
-
-			CheckRegistered(container, typeof(AmbiguousInsertConflict));
-			CheckRegistered(container, typeof(AmbiguousInsertReorderConflict));
-			CheckRegistered(container, typeof(BothEditedAttributeConflict));
-			CheckRegistered(container, typeof(BothEditedTextConflict));
-			CheckRegistered(container, typeof(BothReorderedElementConflict));
-			CheckRegistered(container, typeof(RemovedVsEditedElementConflict));
-			CheckRegistered(container, typeof(RemovedVsEditedAttributeConflict));
-			CheckRegistered(container, typeof(RemovedVsEditedTextConflict));
-			CheckRegistered(container, typeof(BothEditedDifferentPartsOfDependentPiecesOfDataWarning));
-			CheckRegistered(container, typeof(UnmergableFileTypeConflict));
-
 			var typeGuid = conflictNode.GetStringAttribute("typeGuid");
-			if (!container.IsRegisteredWithName<IConflict>(typeGuid))
-				{
-					throw new ApplicationException(typeGuid + " is not registered");
-				}
+
 			IConflict conflict = container.ResolveNamed<IConflict>(typeGuid, new TypedParameter(typeof(XmlNode),conflictNode));
 			return conflict;
 			}
@@ -213,13 +198,6 @@ namespace Chorus.merge.xml.generic
 			}
 		}
 
-		private static void CheckRegistered(IContainer container, Type t)
-		{
-			if (!container.IsRegisteredWithName<IConflict>(GetTypeGuid(t)))
-			{
-				throw new ApplicationException(t.ToString() + " " + GetTypeGuid(t) + " is not registered");
-			}
-		}
 
 		private static void Register<T>(Autofac.ContainerBuilder builder)
 		{
