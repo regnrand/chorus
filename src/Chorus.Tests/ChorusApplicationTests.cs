@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 
+
 namespace Chorus.Tests
 {
 	[TestFixture, RequiresSTA]
@@ -16,7 +17,7 @@ namespace Chorus.Tests
 			using (var folder = new TemporaryFolder("ChorusApplicationTests"))
 			{
 				Application.Idle += new EventHandler(Application_Idle);
-				new Program.Runner().Run(folder.Path, new Arguments(new object[]{}));
+				new Program.Runner().Run(folder.Path, new Arguments(new object[] { }));
 			}
 		}
 
