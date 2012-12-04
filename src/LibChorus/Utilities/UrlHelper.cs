@@ -117,16 +117,11 @@ namespace Chorus.Utilities
 			return url;
 		}
 
-		public static string GetUserName(string url)
-		{
-			Uri uri;
-			if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
-			{
-				return string.Empty;
-			}
-			var result = Regex.Match(uri.UserInfo, @"([^:]*)(:(.*))*");
-			return result.Groups[1].Value;
-		}
+		/// <summary>
+		/// Chorus no longer supports logging in by user name, but to be consistent with normal URL usage,
+		/// puts a fake user name into the URL. This is it!
+		/// </summary>
+		public const string ChorusUserName = "ChorusMagicUser";
 
 		public static string GetPassword(string url)
 		{

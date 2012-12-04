@@ -173,9 +173,9 @@ namespace Chorus.UI.Clone
 				}
 				if (error is RepositoryAuthorizationException)
 				{
-					_progress.WriteError("The server {0} did not accept the reqest of {1} to clone from {2} using password {3}.", SelectedServerPath, AccountName, ProjectId, Password);
-					ErrorReport.NotifyUserOfProblem("The server ({0}) rejected the project name ({1}), user name ({2}), or password ({3}) (sorry, it didn't tell us which one). Make sure that each of these is correct, and that '{2}' is a member of the '{1}' project, with permission to read data.",
-						SelectedServerPath, ProjectId, AccountName, Password);
+					_progress.WriteError("The server {0} did not accept the reqest to clone from {1} using password {2}.", SelectedServerPath, ProjectId, Password);
+					ErrorReport.NotifyUserOfProblem("The server ({0}) rejected the project name ({1}) or password ({2}) (sorry, it didn't tell us which one). Make sure that each of these is correct.",
+						SelectedServerPath, ProjectId, Password);
 				}
 
 				else if (error is HgCommonException)

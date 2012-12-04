@@ -54,7 +54,6 @@ namespace Chorus.UI.Misc
 		{
 			SetServerLabelFromUrl(url);
 			Password = UrlHelper.GetPassword(url);
-			AccountName = UrlHelper.GetUserName(url);
 			ProjectId = UrlHelper.GetPathAfterHost(url);
 			CustomUrl = UrlHelper.GetPathOnly(url);
 			//CustomUrlSelected = true;
@@ -97,9 +96,9 @@ namespace Chorus.UI.Misc
 				else
 				{
 					return "http://" +
-						   HttpUtilityFromMono.UrlEncode((string)AccountName) + ":" +
-						   HttpUtilityFromMono.UrlEncode((string)Password) + "@" + SelectedServerPath + "/" +
-						   HttpUtilityFromMono.UrlEncode(ProjectId);
+						HttpUtilityFromMono.UrlEncode(UrlHelper.ChorusUserName) + ":" +
+						HttpUtilityFromMono.UrlEncode(Password) + "@" + SelectedServerPath + "/" +
+						HttpUtilityFromMono.UrlEncode(ProjectId);
 				}
 			}
 		}
@@ -118,9 +117,7 @@ namespace Chorus.UI.Misc
 				{
 					try
 					{
-						return !string.IsNullOrEmpty(ProjectId) &&
-							   !string.IsNullOrEmpty(AccountName) &&
-							   !string.IsNullOrEmpty(Password);
+						return !string.IsNullOrEmpty(ProjectId);
 					}
 					catch (Exception)
 					{
@@ -131,7 +128,6 @@ namespace Chorus.UI.Misc
 		}
 
 		public string Password { get; set; }
-		public string AccountName { get; set; }
 
 		public bool HaveGoodUrl
 		{

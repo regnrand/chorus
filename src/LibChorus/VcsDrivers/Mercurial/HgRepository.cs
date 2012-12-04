@@ -2009,20 +2009,14 @@ namespace Chorus.VcsDrivers.Mercurial
 				return false;
 			}
 
-			if (string.IsNullOrEmpty(address.UserName))
-			{
-				message = "The account name is missing.";
-				return false;
-			}
-
 			if (string.IsNullOrEmpty(address.Password))
 			{
 				message = string.Format("The password for {0} is missing.", uri.Host);
 				return false;
 			}
 
-			message = string.Format("Ready to send/receive to {0} with project '{1}' and user '{2}'",
-				uri.Host, uri.PathAndQuery.Trim(new char[]{'/'}), address.UserName);
+			message = string.Format("Ready to send/receive to {0} with project '{1}'",
+				uri.Host, uri.PathAndQuery.Trim(new char[]{'/'}));
 
 
 			return true;

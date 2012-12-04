@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Chorus.UI.Misc;
+using Chorus.Utilities;
 using Chorus.VcsDrivers;
 using Chorus.VcsDrivers.Mercurial;
 using NUnit.Framework;
@@ -12,17 +13,10 @@ namespace Chorus.Tests.UI.Misc
 	public class ServerSettingsModelTests
 	{
 		[Test]
-		public void InitFromUri_FullTypicalLangDepot_AccountNameCorrect()
-		{
-			var m = new ServerSettingsModel();
-			m.InitFromUri("http://joe:pass@hg-public.languagedepot.org/tpi");
-			Assert.AreEqual("joe",m.AccountName);
-		}
-		[Test]
 		public void InitFromUri_FullTypicalLangDepot_PasswordCorrect()
 		{
 			var m = new ServerSettingsModel();
-			m.InitFromUri("http://joe:pass@hg-public.languagedepot.org/tpi");
+			m.InitFromUri("http://" + UrlHelper.ChorusUserName + ":pass@hg-public.languagedepot.org/tpi");
 			Assert.AreEqual("pass", m.Password);
 		}
 
@@ -30,28 +24,28 @@ namespace Chorus.Tests.UI.Misc
 		public void InitFromUri_FullTypicalLangDepot_ProjectIdCorrect()
 		{
 			var m = new ServerSettingsModel();
-			m.InitFromUri("http://joe:pass@hg-public.languagedepot.org/tpi");
+			m.InitFromUri("http://" + UrlHelper.ChorusUserName + ":pass@hg-public.languagedepot.org/tpi");
 			Assert.AreEqual("tpi", m.ProjectId);
 		}
 		[Test]
 		public void InitFromUri_FullTypicalLangDepot_SelectedServerPathCorrect()
 		{
 			var m = new ServerSettingsModel();
-			m.InitFromUri("http://joe:pass@hg-public.languagedepot.org/tpi");
+			m.InitFromUri("http://" + UrlHelper.ChorusUserName + ":pass@hg-public.languagedepot.org/tpi");
 			Assert.AreEqual("hg-public.languagedepot.org", m.SelectedServerPath);
 		}
 		[Test]
 		public void InitFromUri_FullTypicalLangDepot_SelectedServerLabel()
 		{
 			var m = new ServerSettingsModel();
-			m.InitFromUri("http://joe:pass@hg-public.languagedepot.org/tpi");
+			m.InitFromUri("http://" + UrlHelper.ChorusUserName + ":pass@hg-public.languagedepot.org/tpi");
 			Assert.AreEqual("languagedepot.org [safe mode]", m.SelectedServerLabel.ToLower());
 		}
 		[Test]
 		public void InitFromUri_FullPrivateLangDepot_SelectedServerLabel()
 		{
 			var m = new ServerSettingsModel();
-			m.InitFromUri("http://joe:pass@hg-private.languagedepot.org/tpi");
+			m.InitFromUri("http://" + UrlHelper.ChorusUserName + ":pass@hg-private.languagedepot.org/tpi");
 			Assert.AreEqual("LanguageDepot.org [private]".ToLower(), m.SelectedServerLabel.ToLower());
 		}
 
@@ -59,7 +53,7 @@ namespace Chorus.Tests.UI.Misc
 		public void InitFromUri_FullTypicalLangDepot_CustomUrlFalse()
 		{
 			var m = new ServerSettingsModel();
-			m.InitFromUri("http://joe:pass@hg-public.languagedepot.org/tpi");
+			m.InitFromUri("http://" + UrlHelper.ChorusUserName + ":pass@hg-public.languagedepot.org/tpi");
 			Assert.IsFalse(m.CustomUrlSelected);
 		}
 
@@ -67,7 +61,7 @@ namespace Chorus.Tests.UI.Misc
 		public void InitFromUri_HasFolderDesignator_IdIsCorrect()
 		{
 			var m = new ServerSettingsModel();
-			m.InitFromUri("http://joe:pass@hg-public.languagedepot.org/tpi?localFolder=foo");
+			m.InitFromUri("http://" + UrlHelper.ChorusUserName + ":pass@hg-public.languagedepot.org/tpi?localFolder=foo");
 			Assert.AreEqual("tpi", m.ProjectId);
 		}
 
@@ -101,7 +95,7 @@ namespace Chorus.Tests.UI.Misc
 			using (var folder = new TemporaryFolder("ServerSettingsModel"))
 			{
 				var m = new ServerSettingsModel();
-				var url = "http://joe:pass@hg-public.languagedepot.org/tpi";
+				var url = "http://" + UrlHelper.ChorusUserName + ":pass@hg-public.languagedepot.org/tpi";
 				m.InitFromProjectPath(folder.Path);
 				m.SetUrlToUseIfSettingsAreEmpty(url);
 				m.SaveSettings();
@@ -131,7 +125,7 @@ namespace Chorus.Tests.UI.Misc
 				Assert.IsTrue(File.Exists(folder.Combine(".hg", "hgrc")));
 				var repo = HgRepository.CreateOrUseExisting(folder.Path, new NullProgress());
 				var address = repo.GetDefaultNetworkAddress<HttpRepositoryPath>();
-				Assert.AreEqual("http://joe:newPassword@hg-public.languagedepot.org/tpi", address.URI);
+				Assert.AreEqual("http://" + UrlHelper.ChorusUserName + ":newPassword@hg-public.languagedepot.org/tpi", address.URI);
 				Assert.AreEqual("newPassword", address.Password);
 			}
 		}
@@ -146,7 +140,7 @@ namespace Chorus.Tests.UI.Misc
 				original.SetKnownRepositoryAddresses(new[] { new HttpRepositoryPath("languagedepot.org [Safe Mode]", existing, false) });
 
 				var m = new ServerSettingsModel();
-				var url = "http://joe:pass@hg-public.languagedepot.org/tpi";
+				var url = "http://" + UrlHelper.ChorusUserName + ":pass@hg-public.languagedepot.org/tpi";
 				m.InitFromProjectPath(folder.Path);
 				m.SetUrlToUseIfSettingsAreEmpty(url);
 				Assert.AreEqual(existing,m.URL);
@@ -166,7 +160,7 @@ namespace Chorus.Tests.UI.Misc
 				original.SetKnownRepositoryAddresses(new[] { new HttpRepositoryPath("default", existing, false) });
 
 				var m = new ServerSettingsModel();
-				var url = "c://joe:pass@hg-public.languagedepot.org/tpi";
+				var url = "c://" + UrlHelper.ChorusUserName + ":pass@hg-public.languagedepot.org/tpi";
 				m.InitFromProjectPath(folder.Path);
 				m.SetUrlToUseIfSettingsAreEmpty(url);
 				Assert.AreEqual(url, m.URL);

@@ -19,7 +19,6 @@ namespace Chorus.Tests.UI.Clone
 			using (var testFolder = new TemporaryFolder("clonetest"))
 			{
 				var model = new GetCloneFromInternetModel(testFolder.Path);
-				model.AccountName = "account";
 				model.Password = "password";
 				model.ProjectId = "id";
 				model.LocalFolderName = "Some<Folder";

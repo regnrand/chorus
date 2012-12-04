@@ -115,11 +115,6 @@ namespace Chorus.VcsDrivers
 			get { return UrlHelper.GetPassword(URI); }
 		}
 
-		public string UserName
-		{
-			get { return UrlHelper.GetUserName(URI); }
-		}
-
 		public abstract bool CanConnect(HgRepository localRepository, string projectName, IProgress progress);
 
 		/// <summary>

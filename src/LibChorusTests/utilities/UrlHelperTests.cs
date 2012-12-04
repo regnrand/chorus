@@ -33,37 +33,6 @@ namespace LibChorus.Tests.utilities
 			Assert.AreEqual("lift://somefile.lift", x);
 		}
 
-
-		[Test]
-		public void GetUserName_HasUserAndPassword_ReturnsUserName()
-		{
-			Assert.AreEqual("joe_user", UrlHelper.GetUserName("http://joe_user:pass@there.com/detail"));
-		}
-
-		[Test]
-		public void GetUserName_HasUserOnly_ReturnsUserName()
-		{
-			Assert.AreEqual("joe_user", UrlHelper.GetUserName("http://joe_user@there.com/detail"));
-		}
-
-		[Test]
-		public void GetUserName_HasPathOnly_ReturnsEmptyString()
-		{
-			Assert.AreEqual(string.Empty, UrlHelper.GetUserName("http://there.com/detail"));
-		}
-
-		[Test]
-		public void GetUserName_EmptyPath_ReturnsEmptyString()
-		{
-			Assert.AreEqual(string.Empty, UrlHelper.GetUserName(""));
-		}
-
-
-		[Test]
-		public void GetPassword_HasUserOnly_ReturnsEmptyString()
-		{
-			Assert.AreEqual(string.Empty, UrlHelper.GetPassword("http://joe_user@there.com/detail"));
-		}
 		[Test]
 		public void GetPassword_HasPathOnly_ReturnsEmptyString()
 		{
@@ -76,9 +45,15 @@ namespace LibChorus.Tests.utilities
 		}
 
 		[Test]
-		public void GetPassword_HasUserAndPass_ReturnsPassword()
+		public void GetPassword_HasFakeUserOnly_ReturnsEmptyString()
 		{
-			Assert.AreEqual("pass", UrlHelper.GetPassword("http://joe_user:pass@there.com/detail"));
+			Assert.AreEqual(string.Empty, UrlHelper.GetPassword("http://" + UrlHelper.ChorusUserName + "@there.com/detail"));
+		}
+
+		[Test]
+		public void GetPassword_HasPathAndPass_ReturnsPassword()
+		{
+			Assert.AreEqual("pass", UrlHelper.GetPassword("http://" + UrlHelper.ChorusUserName + ":pass@there.com/detail"));
 		}
 
 		[Test]

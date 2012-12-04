@@ -57,16 +57,13 @@ namespace Chorus.UI.Misc
 			_customUrl.Visible = Model.CustomUrlSelected;
 			_customUrlLabel.Visible = Model.CustomUrlSelected;
 
-			_accountName.Text = Model.AccountName;
 			_password.Text = Model.Password;
 			_projectId.Text = Model.ProjectId;
 
 
-			_accountName.Visible = Model.NeedProjectDetails;
 			_projectId.Visible = Model.NeedProjectDetails;
 			_password.Visible = Model.NeedProjectDetails;
 			_showCharacters.Visible = Model.NeedProjectDetails;
-			_accountLabel.Visible = Model.NeedProjectDetails;
 			_projectIdLabel.Visible = Model.NeedProjectDetails;
 			_passwordLabel.Visible = Model.NeedProjectDetails;
 
@@ -83,12 +80,6 @@ namespace Chorus.UI.Misc
 		private void _projectId_TextChanged(object sender, EventArgs e)
 		{
 			Model.ProjectId = _projectId.Text.Trim();
-			UpdateDisplay();
-		}
-
-		private void _accountName_TextChanged(object sender, EventArgs e)
-		{
-			Model.AccountName = _accountName.Text.Trim();
 			UpdateDisplay();
 		}
 

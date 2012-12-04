@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Chorus.UI.Clone;
+using Chorus.Utilities;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 
@@ -14,10 +15,10 @@ namespace Chorus.Tests.UI.Clone
 			using (var testFolder = new TemporaryFolder("clonetest"))
 			{
 				var model = new GetCloneFromInternetModel(testFolder.Path);
-				model.InitFromUri("http://john:myPassword@hg-languagedepot.org/tpi?localFolder=tokPisin");
+				model.InitFromUri("http://" + UrlHelper.ChorusUserName + ":myPassword@hg-languagedepot.org/tpi?localFolder=tokPisin");
 				Assert.AreEqual("tokPisin", model.LocalFolderName);
 				Assert.IsTrue(model.ReadyToDownload);
-				Assert.AreEqual("http://john:myPassword@hg-languagedepot.org/tpi",model.URL);
+				Assert.AreEqual("http://" + UrlHelper.ChorusUserName + ":myPassword@hg-languagedepot.org/tpi", model.URL);
 			}
 		}
 
@@ -27,10 +28,9 @@ namespace Chorus.Tests.UI.Clone
 			using (var testFolder = new TemporaryFolder("clonetest"))
 			{
 				var model = new GetCloneFromInternetModel(testFolder.Path);
-				model.AccountName = "account";
 				model.Password = "password";
 				model.ProjectId = "id";
-				Assert.AreEqual("http://account:password@resumable.languagedepot.org/id", model.URL.ToLower());
+				Assert.AreEqual("http://" + UrlHelper.ChorusUserName.ToLower() + ":password@resumable.languagedepot.org/id", model.URL.ToLower());
 			}
 		}
 
