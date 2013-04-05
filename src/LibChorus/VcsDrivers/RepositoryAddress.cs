@@ -314,10 +314,10 @@ namespace Chorus.VcsDrivers
 						var usbRepo = new HgRepository(path, progress);
 						if (usbRepo.Identifier == null)
 						{
-							// Null indicates a new repo, with no commits yet.
+							// Null indicates a new repo, with no commits yet. Skip it.
 							continue;
 						}
-						else if (repoIdentifier.ToLowerInvariant() == usbRepo.Identifier.ToLowerInvariant())
+						if (repoIdentifier.ToLowerInvariant() == usbRepo.Identifier.ToLowerInvariant())
 						{
 							return path;
 						}
@@ -378,7 +378,9 @@ namespace Chorus.VcsDrivers
 		{
 		   // progress.WriteStatus("Looking for USB flash drives with existing repositories...");
 			string path= GetPotentialRepoUri(localRepository.Identifier, projectName, progress);
-			return (path != null) && Directory.Exists(path);
+			if (path == null)
+				return false; // No USB drive to connect to at all.
+			return Directory.Exists(path);
 		}
 
 	}
