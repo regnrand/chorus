@@ -30,7 +30,7 @@ namespace ChorusHub
 		IEnumerable<string> GetRepositoryInformation(string searchUrl);
 
 		[OperationContract]
-		bool PrepareToReceiveRepository(string name);
+		bool PrepareToReceiveRepository(string repoIdentifier, string directoryName);
 	}
 
 	public class ChorusHubService:IDisposable

@@ -7,6 +7,7 @@ using System.ServiceModel;
 using System.Text;
 using Chorus.Utilities;
 using Chorus.VcsDrivers.Mercurial;
+using Palaso.IO;
 using Palaso.Progress;
 
 namespace ChorusHub
@@ -146,7 +147,7 @@ namespace ChorusHub
 
 		private static IEnumerable<Tuple<string, string>> GetAllDirectoriesWithRepos()
 		{
-			var dirs = Directory.GetDirectories(ChorusHubService.Parameters.RootDirectory);
+			var dirs = DirectoryUtilities.GetSafeDirectories(ChorusHubService.Parameters.RootDirectory);
 			foreach (var fullDirName in dirs)
 			{
 				string jsonRepoInfo;
@@ -176,24 +177,75 @@ namespace ChorusHub
 			return true;
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="name"></param>
+		/// <summary></summary>
 		/// <returns>true if client should wait for hg to notice</returns>
-		public bool PrepareToReceiveRepository(string name)
+		public bool PrepareToReceiveRepository(string repoIdentifier, string directoryName)
 		{
-			// Enhance GJM: If it turns out that the caller has the repoID, it'd be better to use that here!
-			var jsonStrings = GetRepositoryInformation(string.Empty);
-			var hubInfo = ImitationHubJSONService.ParseJsonStringsToChorusHubRepoInfos(jsonStrings);
-			if (hubInfo.Any(info => info.RepoName == name))
+			Progress.WriteMessage("Client requested repository information.");
+			foreach (var fullDirName in DirectoryUtilities.GetSafeDirectories(ChorusHubService.Parameters.RootDirectory))
 			{
-				return false;
+				var directory = Path.Combine(ChorusHubService.Parameters.RootDirectory, directoryName);
+				var hgDir = Path.Combine(fullDirName, HgFolder);
+				if (!Directory.Exists(hgDir))
+				{
+					if (fullDirName == directory)
+					{
+						if (DirectoryUtilities.GetSafeDirectories(directory).Any() || Directory.GetFiles(directory).Any())
+						{
+							// Extant folder that has stuff in it. Can't use it. Need a new uniquely named folder.
+							directory = DirectoryUtilities.GetUniqueFolderPath(directory);
+							Directory.CreateDirectory(directory);
+						}
+						//else
+						//{
+						//    // Extant, but completely empty folder (directory). Use it.
+						//}
+					}
+					else
+					{
+						Directory.CreateDirectory(directory);
+					}
+
+					// Incoming new repo. Create an empty repo using the given (or unique-adjusted) folder name.
+					Progress.WriteMessage("PrepareToReceiveRepository() is preparing a place for '" + directory + "'");
+					HgRepository.CreateRepositoryInExistingDir(directory, new ConsoleProgress());
+					return true;
+				}
+
+				// Has repo folder. Repo may, or may not, be used yet.
+				var repo = new HgRepository(fullDirName, Progress);
+				var repoId = repo.Identifier;
+				if (fullDirName == directory)
+				{
+					if (repoId == null || repoIdentifier == repoId)
+					{
+						return false; // Use it (empty repo or extant and matching repo.
+					}
+
+					// Has repo id, but it does not match.
+					// Have to use new unique-adusted folder for it.
+					directory = DirectoryUtilities.GetUniqueFolderPath(directory);
+					Directory.CreateDirectory(directory);
+					// Incoming new repo. Create an empty repo using the given (or unique-adjusted) folder name.
+					Progress.WriteMessage("PrepareToReceiveRepository() is preparing a place for '" + directory + "'");
+					HgRepository.CreateRepositoryInExistingDir(directory, new ConsoleProgress());
+					return true;
+				}
+
+				// Folder names do not match.
+				if (repoId != null || repoIdentifier == repoId)
+				{
+					// Use mis-matched folder name, which has a matching repo id.
+					return false;
+				}
+				// Try another folder.
 			}
-			var directory = Path.Combine(ChorusHubService.Parameters.RootDirectory, name);
-			Progress.WriteMessage("PrepareToReceiveRepository() is preparing a place for '" + name + "'");
-			Directory.CreateDirectory(directory);
-			HgRepository.CreateRepositoryInExistingDir(directory, new ConsoleProgress());
+
+			// Nobody home, so make a new folder.
+			Directory.CreateDirectory(directoryName);
+			// Incoming new repo. Create an empty repo using the given (or unique-adjusted) folder name.
+			Progress.WriteMessage("PrepareToReceiveRepository() is preparing a place for '" + directoryName + "'");
+			HgRepository.CreateRepositoryInExistingDir(directoryName, new ConsoleProgress());
 			return true;
 		}
 	}

@@ -147,8 +147,7 @@ namespace ChorusHub
 		/// to do create the repository. The complexity comes in the timing; hg serve will eventually
 		/// notice the new server, but we don't really know when.
 		/// </summary>
-		/// <param name="directoryName"></param>
-		public bool PrepareHubToSync(string directoryName)
+		public bool PrepareHubToSync(string repoIdentifier, string directoryName)
 		{
 			//Enchance: after creating and init'ing the folder, it would be possible to keep asking
 			//hg serve if it knows about the repository until finally it says "yes", instead of just
@@ -160,7 +159,7 @@ namespace ChorusHub
 			var channel = factory.CreateChannel();
 			try
 			{
-				var doWait = channel.PrepareToReceiveRepository(directoryName);
+				var doWait = channel.PrepareToReceiveRepository(repoIdentifier, directoryName);
 				return doWait;
 			}
 			catch (Exception error)
