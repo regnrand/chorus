@@ -216,15 +216,17 @@ namespace Chorus.UI.Clone
 		{
 			Thread.CurrentThread.Name = "GetRepositoryInformation";
 			var client = new ChorusHubClient();
-			if(client.FindServer()!=null)
+			var server = client.FindServer();
+
+			if (server == null || !server.ServerIsCompatibleWithThisClient)
+			{
+				e.Result = null;
+			}
+			else
 			{
 				// Why do we do this? The returned information isn't used.
 				client.GetRepositoryInformation(_model.ProjectFilter);
 				e.Result = client;
-			}
-			else
-			{
-				e.Result = null;
 			}
 		}
 

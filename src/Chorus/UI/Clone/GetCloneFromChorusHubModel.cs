@@ -48,9 +48,16 @@ namespace Chorus.UI.Clone
 		public void MakeClone(IProgress progress)
 		{
 			 var client = new ChorusHubClient();
-			if(client.FindServer()==null)
+			var server = client.FindServer();
+			if (server == null)
 			{
-				progress.WriteError("The Chorus Server is no longer available.");
+				progress.WriteError("The Chorus Server is not available.");
+				CloneSucceeded = false;
+				return;
+			}
+			if (!server.ServerIsCompatibleWithThisClient)
+			{
+				progress.WriteError("The Chorus Server is not compatible with ths client.");
 				CloneSucceeded = false;
 				return;
 			}
