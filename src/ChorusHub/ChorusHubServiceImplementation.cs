@@ -182,9 +182,9 @@ namespace ChorusHub
 		public bool PrepareToReceiveRepository(string repoIdentifier, string directoryName)
 		{
 			Progress.WriteMessage("Client requested repository information.");
+			var directory = Path.Combine(ChorusHubService.Parameters.RootDirectory, directoryName);
 			foreach (var fullDirName in DirectoryUtilities.GetSafeDirectories(ChorusHubService.Parameters.RootDirectory))
 			{
-				var directory = Path.Combine(ChorusHubService.Parameters.RootDirectory, directoryName);
 				var hgDir = Path.Combine(fullDirName, HgFolder);
 				if (!Directory.Exists(hgDir))
 				{
@@ -207,7 +207,7 @@ namespace ChorusHub
 					}
 
 					// Incoming new repo. Create an empty repo using the given (or unique-adjusted) folder name.
-					Progress.WriteMessage("PrepareToReceiveRepository() is preparing a place for '" + directory + "'");
+					Progress.WriteMessage("PrepareToReceiveRepository() is preparing a place for '" + directoryName + "'");
 					HgRepository.CreateRepositoryInExistingDir(directory, new ConsoleProgress());
 					return true;
 				}
@@ -227,7 +227,7 @@ namespace ChorusHub
 					directory = DirectoryUtilities.GetUniqueFolderPath(directory);
 					Directory.CreateDirectory(directory);
 					// Incoming new repo. Create an empty repo using the given (or unique-adjusted) folder name.
-					Progress.WriteMessage("PrepareToReceiveRepository() is preparing a place for '" + directory + "'");
+					Progress.WriteMessage("PrepareToReceiveRepository() is preparing a place for '" + directoryName + "'");
 					HgRepository.CreateRepositoryInExistingDir(directory, new ConsoleProgress());
 					return true;
 				}
@@ -242,10 +242,10 @@ namespace ChorusHub
 			}
 
 			// Nobody home, so make a new folder.
-			Directory.CreateDirectory(directoryName);
+			Directory.CreateDirectory(directory);
 			// Incoming new repo. Create an empty repo using the given (or unique-adjusted) folder name.
 			Progress.WriteMessage("PrepareToReceiveRepository() is preparing a place for '" + directoryName + "'");
-			HgRepository.CreateRepositoryInExistingDir(directoryName, new ConsoleProgress());
+			HgRepository.CreateRepositoryInExistingDir(directory, new ConsoleProgress());
 			return true;
 		}
 	}
