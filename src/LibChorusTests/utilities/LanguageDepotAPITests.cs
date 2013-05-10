@@ -22,7 +22,18 @@ namespace LibChorus.Tests.utilities
 		}
 
 		[Test]
-		public void CreateProjectReturnsExpectedId()
+		public void LanguageDepotApi_ParseAddress_GeneratesValidUriAndProjectId()
+		{
+			var address = new HttpRepositoryPath("test", "http://user:password@languagedepotapi.local/ignored", true);
+			Uri uri = null;
+			var projectId = "";
+			Assert.DoesNotThrow(() => LanguageDepotApi.ParseAddress(address, out uri, out projectId));
+			Assert.That(projectId, Is.EqualTo("ignored"));
+			Assert.That(uri.ToString(), Is.EqualTo("http://languagedepotapi.local/src/LanguageDepot/LanguageDepotAPI.php"));
+		}
+
+		[Test]
+		public void LanguageDepotApi_CreateProjectReturnsExpectedId()
 		{
 			LanguageDepotApiResponse whatIsIt = new LanguageDepotApiResponse();
 			whatIsIt.Identifier = "testy";
@@ -36,28 +47,56 @@ namespace LibChorus.Tests.utilities
 			using (var writer = new JsonTextWriter(sw))
 			{
 				writer.WriteStartObject();
-				writer.WriteMember("status");
-				writer.WriteNumber(200);
-				writer.WriteMember("message");
+				writer.WriteMember("id");
+				writer.WriteNumber(1);
+				writer.WriteMember("response");
+					writer.WriteStartObject();
+					writer.WriteMember("status");
+					writer.WriteString("200");
+					writer.WriteMember("message");
+					writer.WriteNull();
+					writer.WriteMember("identifier");
+					writer.WriteString("lang-flex");
+					writer.WriteEndObject();
+				writer.WriteMember("error");
 				writer.WriteNull();
-				writer.WriteMember("identifier");
-				writer.WriteString("lang-flex");
 				writer.WriteEndObject();
 			}
 			testServer.ResponseData = sb.ToString();
 			var address = new HttpRepositoryPath("test", "http://user:password@hg-test.languagedepot.org/ignored", true);
-			var result = LanguageDepotApi.CreateProject(address);
+			var result = LanguageDepotApi.CreateProject(address, "fake@fake.org");
 			Assert.True(result.StatusCode == 200, "Create project should have returned true with this data");
 			Assert.AreEqual("lang-flex", result.Identifier, "given data should have returned lang-flex as the identifier");
 		}
 
 		[Test]
-		public void ProjectExistsReturnsFailureMessage()
+		public void LanguageDepotApi_ProjectExistsReturnsFailureMessage()
 		{
 			testServer.ResponseCode = HttpStatusCode.Unauthorized;
-			testServer.ResponseData = "{\"status\":401, \"message\":\"Cannot create project: the projectID $id already exists\", \"identifier\":null}";
+
+			var sb = new StringBuilder();
+			var sw = new StringWriter(sb);
+			using (var writer = new JsonTextWriter(sw))
+			{
+				writer.WriteStartObject();
+				writer.WriteMember("id");
+				writer.WriteNumber(1);
+				writer.WriteMember("response");
+				writer.WriteStartObject();
+				writer.WriteMember("status");
+				writer.WriteString("401");
+				writer.WriteMember("message");
+				writer.WriteString("Cannot create project: the projectID $id already exists");
+				writer.WriteMember("identifier");
+				writer.WriteNull();
+				writer.WriteEndObject();
+				writer.WriteMember("error");
+				writer.WriteNull();
+				writer.WriteEndObject();
+			}
+			testServer.ResponseData = sb.ToString();
 			var address = new HttpRepositoryPath("test", "http://user:password@hg-test.languagedepot.org/ignored", true);
-			var result = LanguageDepotApi.CreateProject(address);
+			var result = LanguageDepotApi.CreateProject(address, "fake@fake.org");
 			Assert.False(result.StatusCode == 200, "Create project should have returned false and an error message with this data");
 			Assert.True(result.ErrorMessage.Contains("already exists"), "error code should have been returned with already exists");
 		}
@@ -66,7 +105,7 @@ namespace LibChorus.Tests.utilities
 		{
 			public HttpStatusCode ResponseCode = HttpStatusCode.OK;
 			public string ResponseData = null;
-			public HttpWebResponse CreateProject(HttpRepositoryPath address)
+			public HttpWebResponse CreateProject(HttpRepositoryPath address, string email)
 			{
 				return new TestHttpWebResponse(ResponseCode, ResponseData);
 			}

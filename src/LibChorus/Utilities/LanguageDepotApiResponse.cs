@@ -16,10 +16,14 @@ namespace Chorus.Utilities
 			var reader = new StreamReader(stream);
 			var inputString = reader.ReadToEnd();
 			var response = new LanguageDepotApiResponse();
-			var jsonObject = JsonConvert.Import<JsonObject>(inputString);
-			response.Identifier = jsonObject["identifier"] as string;
-			response.StatusCode = ((JsonNumber)jsonObject["status"]).ToInt32();
-			response.ErrorMessage = jsonObject["message"] as string;
+			var jsonRpcResponse = JsonConvert.Import<JsonObject>(inputString);
+			var methodResponse = jsonRpcResponse["response"] as JsonObject;
+			if (methodResponse != null)
+			{
+				response.Identifier = methodResponse["identifier"] as string;
+				response.StatusCode = int.Parse(methodResponse["status"] as string);
+				response.ErrorMessage = methodResponse["message"] as string;
+			}
 			return response;
 		}
 	}
