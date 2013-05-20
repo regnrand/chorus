@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Chorus.Properties;
 using Chorus.UI.Misc;
 using Chorus.UI.Settings;
+using Chorus.Utilities;
 using Chorus.VcsDrivers;
 using Chorus.VcsDrivers.Mercurial;
 using ChorusHub;
@@ -367,6 +368,7 @@ namespace Chorus.UI.Sync
 			if (RepositoryChosen != null)
 			{
 				var address = _repository.GetDefaultNetworkAddress<HttpRepositoryPath>();
+				LanguageDepotApi.CreateProject((HttpRepositoryPath)address);
 				RepositoryChosen.Invoke(this, new SyncStartArgs(address, _commitMessageText.Text));
 			}
 		}

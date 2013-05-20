@@ -96,13 +96,13 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\..\lib\common\Autofac.dll</HintPath>
 	</Reference>
-	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\..\lib\$(Configuration)\icu.net.dll</HintPath>
-	</Reference>
 	<None Include="..\..\lib\$(Configuration)\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
+	<Reference Include="Jayrock.Json, Version=0.9.12915.0, Culture=neutral, processorArchitecture=MSIL">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\..\lib\Debug\Jayrock.Json.dll</HintPath>
+	</Reference>
 	<Reference Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\..\lib\$(Configuration)\NDesk.DBus.dll</HintPath>
@@ -120,11 +120,8 @@
 	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Core" />
-	<Reference Include="System.Data" />
-	<Reference Include="System.Data.Linq" />
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Management" />
-	<Reference Include="System.Runtime.Serialization" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -174,8 +171,10 @@
 	<Compile Include="sync\DefaultSychronizerAdjunct.cs" />
 	<Compile Include="sync\ISychronizerAdjunct.cs" />
 	<Compile Include="sync\LargeFileFilter.cs" />
+	<Compile Include="Utilities\LanguageDepotApi.cs" />
 	<Compile Include="Utilities\code\LinuxUtils.cs" />
 	<Compile Include="Utilities\Help\HelpUtils.cs" />
+	<Compile Include="Utilities\LanguageDepotApiResponse.cs" />
 	<Compile Include="Utilities\MakeRecordDictionary.cs" />
 	<Compile Include="FileTypeHanders\NotePresenter.cs" />
 	<Compile Include="IWritingSystem.cs" />
