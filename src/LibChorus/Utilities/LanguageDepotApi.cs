@@ -57,6 +57,16 @@ namespace Chorus.Utilities
 			var apiPage = @"src/LanguageDepot/LanguageDepotAPI.php";
 			var addressUri = new UriBuilder(address.URI);
 			var builder = new UriBuilder(Uri.UriSchemeHttp, addressUri.Host, 80, apiPage);
+			if (!String.IsNullOrEmpty(address.UserName))
+			{
+				builder.UserName = address.UserName;
+				builder.Password = address.Password;
+			}
+			else
+			{
+				builder.UserName = @"FLExUser";
+				builder.Password = @"inscrutable";
+			}
 			serverAddress = builder.Uri;
 			projectId = addressUri.Path.Substring(addressUri.Path.LastIndexOf('/') + 1);
 		}

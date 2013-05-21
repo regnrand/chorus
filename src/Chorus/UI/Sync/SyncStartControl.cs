@@ -368,7 +368,8 @@ namespace Chorus.UI.Sync
 			if (RepositoryChosen != null)
 			{
 				var address = _repository.GetDefaultNetworkAddress<HttpRepositoryPath>();
-				LanguageDepotApi.CreateProject((HttpRepositoryPath)address);
+				var email = Properties.Settings.Default.InternetEmailAddress;
+				LanguageDepotApi.CreateProject((HttpRepositoryPath)address, email);
 				RepositoryChosen.Invoke(this, new SyncStartArgs(address, _commitMessageText.Text));
 			}
 		}
