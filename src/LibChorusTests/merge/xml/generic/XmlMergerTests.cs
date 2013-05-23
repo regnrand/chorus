@@ -55,6 +55,30 @@ namespace LibChorus.Tests.merge.xml.generic
 				"a[@silly='nonsense']/b[@key='one']/c[text()='first']");
 		}
 
+		[Test]
+		public void PreMergeExCalledWithSituation()
+		{
+			string red = @"<a/>";
+			string ancestor = red;
+			string blue = @"<a>
+								<b key='one'>
+									<c>first</c>
+								</b>
+							</a>";
+			var specialMergeStrategies = new Dictionary<string, ElementStrategy>();
+			var sillyPremergerEx = new SillyPremergerEx();
+			var elementStrat = new ElementStrategy(true)
+			{
+				Premerger = sillyPremergerEx,
+				ContextDescriptorGenerator = new MockContextGenerator2()
+			};
+			specialMergeStrategies["a"] = elementStrat;
+			CheckOneWay(red, blue, ancestor, new NullMergeSituation(), specialMergeStrategies, (Action<string, ElementStrategy>)null,
+				"a[@silly='nonsense']/b[@key='one']/c[text()='first']");
+			Assert.That(sillyPremergerEx.ShortFormWasCalled, Is.True);
+			Assert.That(sillyPremergerEx.Situation, Is.Not.Null);
+		}
+
 		private class SillyPremerger : IPremerger
 		{
 			public void Premerge(IMergeEventListener listener, ref XmlNode ours, XmlNode theirs, XmlNode ancestor)
@@ -62,6 +86,30 @@ namespace LibChorus.Tests.merge.xml.generic
 				((XmlElement)ours).SetAttribute("silly", "nonsense");
 				((XmlElement)theirs).SetAttribute("silly", "nonsense");
 				((XmlElement)ancestor).SetAttribute("silly", "nonsense");
+			}
+		}
+
+		private class SillyPremergerEx : IPremergerEx
+		{
+			public bool ShortFormWasCalled;
+			public void Premerge(IMergeEventListener listener, ref XmlNode ours, XmlNode theirs, XmlNode ancestor)
+			{
+				ShortFormWasCalled = true;
+			}
+
+			public MergeSituation Situation;
+
+			public void Premerge(MergeSituation situation, IMergeEventListener listener, ref XmlNode ours, XmlNode theirs, XmlNode ancestor)
+			{
+				((XmlElement)ours).SetAttribute("silly", "nonsense");
+				((XmlElement)theirs).SetAttribute("silly", "nonsense");
+				((XmlElement)ancestor).SetAttribute("silly", "nonsense");
+				Situation = situation;
+				var conflict = new XmlTextBothAddedTextConflict("a", ours, theirs, situation, null, "us");
+				listener.RecordContextInConflict(conflict);
+				// I'd like to have this assert, but none of the listeners configured for this test
+				// is smart enough to actually record the context in the conflict.
+				//Assert.That(conflict.Context, Is.Not.Null);
 			}
 		}
 

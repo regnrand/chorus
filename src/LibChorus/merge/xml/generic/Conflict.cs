@@ -315,7 +315,7 @@ namespace Chorus.merge.xml.generic
 		/// NOTE that the indicated type MUST have a TypeGuid. See declarations of concrete classes in this file.
 		/// </summary>
 		/// <param name="type"></param>
-		internal static void RegisterContextClass(Type type)
+		public static void RegisterContextClass(Type type)
 		{
 			_additionalConflictTypes.Add(type);
 			_conflictFactory = null; // regenerate when next needed

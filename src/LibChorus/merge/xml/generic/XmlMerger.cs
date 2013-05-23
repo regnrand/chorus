@@ -260,6 +260,12 @@ namespace Chorus.merge.xml.generic
 				_htmlContextGenerator = (generator as IGenerateHtmlContext); // null is OK.
 			}
 
+			// Step 0.2. If the premerger implements this additional interface, invoke it.
+			// This version of Premerge is entitled to assume there is a context (and so may report conflicts).
+			var premergerEx = elementStrat.Premerger as IPremergerEx;
+			if (premergerEx != null)
+				premergerEx.Premerge(MergeSituation, EventListener, ref ours, theirs, ancestor);
+
 			// Step 1: If the current set of nodes are immutable,
 			// then make sure no changes took place (among a few other things).
 			if (elementStrat.IsImmutable)

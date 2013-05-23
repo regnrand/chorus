@@ -240,6 +240,19 @@ namespace Chorus.merge.xml.generic
 		void Premerge(IMergeEventListener listener, ref XmlNode ours, XmlNode theirs, XmlNode ancestor);
 	}
 
+	/// <summary>
+	/// Interface for premerger that needs the merge situation.
+	/// (Note: could just add this to IPremerger. But then we have to find and fix all clients
+	/// to take the new parameter and ignore it.)
+	/// </summary>
+	public interface IPremergerEx : IPremerger
+	{
+		/// <summary>
+		/// Premerge the given elements.
+		/// </summary>
+		void Premerge(MergeSituation situation, IMergeEventListener listener, ref XmlNode ours, XmlNode theirs, XmlNode ancestor);
+	}
+
 	internal class DefaultPremerger : IPremerger
 	{
 		public void Premerge(IMergeEventListener listener, ref XmlNode ours, XmlNode theirs, XmlNode ancestor)
