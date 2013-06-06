@@ -267,10 +267,5 @@ namespace Chorus.UI.Sync
 		{
 			_showCancelButtonTimer.Enabled = false;
 		}
-
-		private void _statusText_Click(object sender, EventArgs e)
-		{
-
-		}
 	}
 }

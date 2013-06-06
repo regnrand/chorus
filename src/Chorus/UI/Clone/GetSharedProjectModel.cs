@@ -22,8 +22,8 @@ namespace Chorus.UI.Clone
 		/// </summary>
 		/// <param name="parent">Window that will be parent of progress window</param>
 		/// <param name="projectFilter">Function taking a directory path and telling whether it contains the right sort of repo</param>
-		/// <param name="hubQuery">String on which to build a URL query to ChorusHub to accomplish the purpose of 'projectFilter'
-		/// in the ChorusHub environment</param>
+		/// <param name="projectQuery">String on which to build a URL query to ChorusHub or the internet to accomplish the purpose of 'projectFilter'
+		/// in those environments</param>
 		/// <example>FLExBridge sends "fileExtension=.lift|._custom_properties" to get both LIFT and FLExBridge repos, but not Bloom ones,
 		/// for instance. The server looks in the project's .hg/store/data folder for a file ending in .lift.i or ._custom_properties.i</example>
 		/// <param name="baseProjectDirForNewClone">The base folder for the new clone, if created.</param>
@@ -38,7 +38,7 @@ namespace Chorus.UI.Clone
 		/// A CloneResult that provides the clone results (e.g., success or failure) and the actual clone location (null if not created).
 		/// </returns>
 		public CloneResult GetSharedProjectUsing(Form parent, string baseProjectDirForNewClone, string preferredClonedFolderName,
-			Func<string, bool> projectFilter, string hubQuery, string baseProjectDirInWhichToSearchForRepositories, string lowerLevelRepoPath,
+			Func<string, bool> projectFilter, string projectQuery, string baseProjectDirInWhichToSearchForRepositories, string lowerLevelRepoPath,
 			string howToSendReceiveMessageText)
 		{
 			Guard.AgainstNull(parent, "parent");
@@ -94,7 +94,8 @@ namespace Chorus.UI.Clone
 				case ExtantRepoSource.Internet:
 					var cloneFromInternetModel = new GetCloneFromInternetModel(baseProjectDirForNewClone)
 						{
-							LocalFolderName = preferredClonedFolderName
+							LocalFolderName = preferredClonedFolderName,
+							ProjectType = projectQuery,
 						};
 					using (var cloneFromInternetDialog = new GetCloneFromInternetDialog(cloneFromInternetModel))
 					{
@@ -117,7 +118,7 @@ namespace Chorus.UI.Clone
 				case ExtantRepoSource.ChorusHub:
 					var getCloneFromChorusHubModel = new GetCloneFromChorusHubModel(baseProjectDirForNewClone)
 					{
-						ProjectFilter = hubQuery,
+						ProjectFilter = projectQuery,
 						ExistingProjects = existingProjectNames,
 						ExistingRepositoryIdentifiers = existingRepositories
 					};

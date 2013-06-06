@@ -37,7 +37,7 @@ namespace Chorus.Tests
 				</notes>");
 
 			_system = new ChorusSystem(_folder.Path);
-			_system.Init(string.Empty);
+			_system.Init(string.Empty, "ChorusSystemTest", "en");
 		}
 
 		[TearDown]

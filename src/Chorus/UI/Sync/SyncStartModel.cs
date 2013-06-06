@@ -25,6 +25,10 @@ namespace Chorus.UI.Sync
 			get { return _noSharedFolderMsg; }
 		}
 
+		public string ProjectType { get; set; }
+
+		public string LanguageId { get; set; }
+
 		public SyncStartModel(HgRepository repository)
 		{
 			_repository = repository;
@@ -46,6 +50,15 @@ namespace Chorus.UI.Sync
 				message = error.Message;
 				tooltip = string.Empty;
 				return false;
+			}
+
+			// Enable the Internet button if there is no information in the repository at
+			// all, then handle the creation on the internet and initial setup after the click
+			if (address == null)
+			{
+				message = "No internet repository configured";
+				tooltip = "Click to create new internet repository.";
+				return true;
 			}
 
 			bool ready = _repository.GetIsReadyForInternetSendReceive(out tooltip);

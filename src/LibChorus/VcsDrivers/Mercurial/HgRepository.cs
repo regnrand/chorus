@@ -1306,7 +1306,7 @@ namespace Chorus.VcsDrivers.Mercurial
 			var section = doc.Sections.GetOrCreate("paths");
 			foreach (var address in addresses)
 			{
-				section.Set(address.Name, address.URI);
+				address.WriteConfig(section);
 			}
 			doc.SaveAndGiveMessageIfCannot();
 		}
@@ -1522,8 +1522,6 @@ namespace Chorus.VcsDrivers.Mercurial
 			}
 		}
 
-
-
 		public void RecoverFromInterruptedTransactionIfNeeded()
 		{
 			CheckAndUpdateHgrc();
@@ -1640,8 +1638,6 @@ namespace Chorus.VcsDrivers.Mercurial
 			lockPath = Path.Combine(lockPath, "lock");
 			return RemoveOldLockFile(processNameToMatch, lockPath, registerWarningIfFound);
 		}
-
-
 
 		private bool RemoveOldLockFile(string processNameToMatch, string pathToLock, bool registerWarningIfFound)
 		{
@@ -2098,6 +2094,61 @@ namespace Chorus.VcsDrivers.Mercurial
 			{
 				return Directory.Exists(Path.Combine(_pathToRepository, ".hg"));
 			}
+		}
+
+		/// <summary>
+		/// The ISO 639-3 language code stored in the hgrc file
+		/// </summary>
+		public string LanguageCode
+		{
+			get
+			{
+				var doc = GetMercurialConfigForRepository();
+				var section = doc.Sections.GetOrCreate("RepositoryInformation");
+				return section.GetValue("LanguageId");
+			}
+		}
+
+		/// <summary>
+		/// The project type e.g. flex, bloom, dict stored in the hgrc file
+		/// </summary>
+		public string ProjectType
+		{
+			get
+			{
+				var doc = GetMercurialConfigForRepository();
+				var section = doc.Sections.GetOrCreate("RepositoryInformation");
+				return section.GetValue("RepositoryType");
+			}
+		}
+
+		public string ProjectId
+		{
+			get
+			{
+				var doc = GetMercurialConfigForRepository();
+				var section = doc.Sections.GetOrCreate("RepositoryInformation");
+				return section.GetValue("ProjectId");
+			}
+		}
+
+		public void SetProjectTypeAndLanguageCode(string type, string languageId)
+		{
+			CheckAndUpdateHgrc();
+			var doc = GetMercurialConfigForRepository();
+			var section = doc.Sections.GetOrCreate("RepositoryInformation");
+			section.Set("RepositoryType", type);
+			section.Set("LanguageId", languageId);
+			doc.SaveAndThrowIfCannot();
+		}
+
+		public void SetProjectId(string projectId)
+		{
+			CheckAndUpdateHgrc();
+			var doc = GetMercurialConfigForRepository();
+			var section = doc.Sections.GetOrCreate("RepositoryInformation");
+			section.Set("ProjectId", projectId); //usually the RepositoryType-LanguageId but not always
+			doc.SaveAndThrowIfCannot();
 		}
 	}
 

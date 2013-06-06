@@ -61,6 +61,7 @@ namespace Chorus.UI.Sync
 			Guard.AgainstNull(repository, "repository");
 			SetupSharedFolderAndInternetUI();
 
+
 			_model = new SyncStartModel(repository);
 			_repository = repository;
 
@@ -90,7 +91,7 @@ namespace Chorus.UI.Sync
 
 		private DialogResult DisplaySRSettingsDlg()
 		{
-			var settingsDlg = new SendReceiveSettings(_repository.PathToRepo);
+			var settingsDlg = new SendReceiveSettings(_repository.PathToRepo, _model.ProjectType, _model.LanguageId);
 			var result = settingsDlg.ShowDialog();
 			if(result == DialogResult.OK)
 			{
@@ -368,8 +369,28 @@ namespace Chorus.UI.Sync
 			if (RepositoryChosen != null)
 			{
 				var address = _repository.GetDefaultNetworkAddress<HttpRepositoryPath>();
-				var email = Properties.Settings.Default.InternetEmailAddress;
-				LanguageDepotApi.CreateProject((HttpRepositoryPath)address, email);
+				var internetModel = new ServerSettingsModel();
+				internetModel.InitFromProjectPath(_repository.PathToRepo);
+				if (String.IsNullOrEmpty(internetModel.ProjectId))
+				{
+					using (var proj = new NewInternetProject(internetModel))
+					{
+						var result = proj.ShowDialog(this);
+						if (result == DialogResult.OK)
+						{
+							var response = LanguageDepotApi.CreateProject((HttpRepositoryPath)address, internetModel.Email);
+							if (String.IsNullOrEmpty(response.Identifier))
+							{
+								MessageBox.Show(response.ErrorMessage, "Error creating project on server.");
+								return;
+							}
+						}
+						else
+						{
+							return;
+						}
+					}
+				}
 				RepositoryChosen.Invoke(this, new SyncStartArgs(address, _commitMessageText.Text));
 			}
 		}

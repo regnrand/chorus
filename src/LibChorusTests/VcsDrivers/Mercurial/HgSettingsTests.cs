@@ -6,6 +6,7 @@ using Chorus.VcsDrivers.Mercurial;
 using LibChorus.TestUtilities;
 using NUnit.Framework;
 using System.Linq;
+using Nini.Ini;
 using Palaso.Progress;
 using Palaso.TestUtilities;
 
@@ -375,6 +376,48 @@ x =
 				Assert.AreEqual("a", repository.GetEnabledExtension().ToArray()[0]);
 				Assert.AreEqual("x", repository.GetEnabledExtension().ToArray()[1]);
 				Assert.AreEqual("b", repository.GetEnabledExtension().ToArray()[2]);
+			}
+		}
+
+		[Test]
+		public void RepositoryTypeAndLanguageId_SetWhenBlankWorks()
+		{
+			using (new MercurialIniForTests())
+			using (var testRoot = new TemporaryFolder("ChorusHgSettingsTest"))
+			{
+				var repo = HgRepository.CreateRepositoryInExistingDir(testRoot.Path, _progress);
+				repo.SetProjectTypeAndLanguageCode("test", "abc");
+
+				var testFile = new IniDocument(testRoot.Combine(Path.Combine(".hg", "hgrc")));
+				var section = testFile.Sections["RepositoryInformation"];
+				Assert.NotNull(section, "Failed to add RepositoryInformation section to the config");
+				Assert.AreEqual(section.GetKeys().Count(), 2, "Failed to add both RepositoryType and LanguageId sections");
+				Assert.AreEqual(section.GetValue("RepositoryType"), "test", "Failed to set RepositoryType");
+				Assert.AreEqual(section.GetValue("LanguageId"), "abc", "Failed to set LanguageId");
+			}
+		}
+
+		[Test]
+		public void RepositoryTypeAndLanguageId_SetWhenExistingWorks()
+		{
+			using (new MercurialIniForTests())
+			using (var testRoot = new TemporaryFolder("ChorusHgSettingsTest"))
+			{
+				var repo = HgRepository.CreateRepositoryInExistingDir(testRoot.Path, _progress);
+				File.WriteAllText(testRoot.Combine(Path.Combine(".hg", "hgrc")), @"
+[RepositoryInformation]
+RepositoryType = here
+LanguageId = xyz
+");
+				Assert.DoesNotThrow(() => repo.SetProjectTypeAndLanguageCode("test", "abc"),
+									"Exception trying to set data when it already exists");
+
+				var testFile = new IniDocument(testRoot.Combine(Path.Combine(".hg", "hgrc")));
+				var section = testFile.Sections["RepositoryInformation"];
+				Assert.NotNull(section, "Failed to add RepositoryInformation section to the config");
+				Assert.AreEqual(section.GetKeys().Count(), 2, "Failed to add both RepositoryType and LanguageId sections");
+				Assert.AreEqual(section.GetValue("RepositoryType"), "test", "Failed to set RepositoryType");
+				Assert.AreEqual(section.GetValue("LanguageId"), "abc", "Failed to set LanguageId");
 			}
 		}
 

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
+using System.Windows.Forms;
 using Chorus.Utilities;
 using Chorus.VcsDrivers;
 using Chorus.VcsDrivers.Mercurial;
@@ -15,6 +17,7 @@ namespace Chorus.UI.Misc
 	{
 		public readonly Dictionary<string, string> Servers = new Dictionary<string, string>();
 		private string _pathToRepo;
+		private string _email;
 
 		public ServerSettingsModel()
 		{
@@ -28,34 +31,16 @@ namespace Chorus.UI.Misc
 			SelectedServerLabel = languageDepotLabel;
 		}
 
-
-		///<summary>
-		/// Show settings for an existing project. The project doesn't need to have any
-		/// previous chorus activity (e.g. no .hg folder is needed).
-		///</summary>
-		///<param name="path"></param>
-		public virtual void InitFromProjectPath(string path)
-		{
-			RequireThat.Directory(path).Exists();
-
-			var repo = HgRepository.CreateOrUseExisting(path, new NullProgress());
-			_pathToRepo = repo.PathToRepo;
-
-			var address = repo.GetDefaultNetworkAddress<HttpRepositoryPath>();
-			if (address != null)
-			{
-				InitFromUri(address.URI);
-			}
-
-			//otherwise, just leave everything in the default state
-		}
-
 		public virtual void InitFromUri(string url)
 		{
 			SetServerLabelFromUrl(url);
 			Password = UrlHelper.GetPassword(url);
+			if (String.IsNullOrEmpty(LanguageId))
+			{
+				//For legacy configurations pull the ProjectName out of the url
+				ProjectId = UrlHelper.GetPathAfterHost(url);
+			}
 			AccountName = UrlHelper.GetUserName(url);
-			ProjectId = UrlHelper.GetPathAfterHost(url);
 			CustomUrl = UrlHelper.GetPathOnly(url);
 			//CustomUrlSelected = true;
 		}
@@ -74,6 +59,27 @@ namespace Chorus.UI.Misc
 			}
 		}
 
+		public string Email
+		{
+			get { return _email; }
+			set { CheckValidEmail(value); }
+		}
+
+		private void CheckValidEmail(string email)
+		{
+			//Validating e-mails according to the RFC is far too troublesome to implement, just use the .NET constructor
+			//and catch since the parser is not exposed, even though it pains me to do so.
+			try
+			{
+				var test = new MailAddress(email);
+				_email = email;
+			}
+			catch
+			{
+				MessageBox.Show("Your e-mail address is not valid, please check it and re-enter.", "Invalid e-mail address");
+			}
+		}
+
 		public string NameOfProjectOnRepository
 		{
 			get
@@ -83,6 +89,10 @@ namespace Chorus.UI.Misc
 				return ProjectId;
 			}
 		}
+
+		public string LanguageId { get; set; }
+
+		public string ProjectType { get; set; }
 
 		public string ProjectId { get; set; }
 
@@ -110,7 +120,7 @@ namespace Chorus.UI.Misc
 		{
 			get
 			{
-				if (!NeedProjectDetails)
+				if (!NeedUrlField)
 				{
 					return true;
 				}
@@ -156,9 +166,9 @@ namespace Chorus.UI.Misc
 			get; set;
 		}
 
-		public bool NeedProjectDetails
+		public bool NeedUrlField
 		{
-			get { return !CustomUrlSelected; }
+			get { return CustomUrlSelected; }
 		}
 
 		public bool CustomUrlSelected
@@ -190,6 +200,7 @@ namespace Chorus.UI.Misc
 
 			// Use safer SetTheOnlyAddressOfThisType method, as it won't clobber a shared network setting, if that was the clone source.
 			repo.SetTheOnlyAddressOfThisType(new HttpRepositoryPath(AliasName, URL, false));
+			repo.SetProjectId(ProjectId);
 		}
 
 		public string AliasName
@@ -224,6 +235,24 @@ namespace Chorus.UI.Misc
 			{
 				InitFromUri(url);
 			}
+		}
+
+		public virtual void InitFromProjectPath(string path)
+		{
+			RequireThat.Directory(path).Exists();
+
+			var repo = HgRepository.CreateOrUseExisting(path, new NullProgress());
+			_pathToRepo = repo.PathToRepo;
+			LanguageId = repo.LanguageCode;
+			ProjectType = repo.ProjectType;
+			ProjectId = repo.ProjectId;
+			var address = repo.GetDefaultNetworkAddress<HttpRepositoryPath>();
+			if (address != null)
+			{
+				InitFromUri(address.URI);
+			}
+
+			//otherwise, just leave everything in the default state
 		}
 	}
 }

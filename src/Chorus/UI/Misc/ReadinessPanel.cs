@@ -28,6 +28,16 @@ namespace Chorus.UI.Misc
 		/// </summary>
 		public string ProjectFolderPath { get; set; }
 
+		/// <summary>
+		/// This must be set by the client before this control is displayed
+		/// </summary>
+		public string ProjectType { get; set; }
+
+		/// <summary>
+		/// This must be set by the client before this control is displayed
+		/// </summary>
+		public string LanguageId { get; set; }
+
 		private void ReadinessPanel_Resize(object sender, EventArgs e)
 		{
 			_chorusReadinessMessage.MaximumSize = new Size(this.Width -(10+ _chorusReadinessMessage.Left), _chorusReadinessMessage.Height);

@@ -35,6 +35,14 @@ namespace Chorus.UI.Misc
 					_serverCombo.Items.Add(pair.Key);
 				}
 				_serverCombo.SelectedIndexChanged += OnSelectedIndexChanged;
+				if (!String.IsNullOrEmpty(_model.ProjectId))
+				{
+					_projectId.Text = _model.ProjectId;
+				}
+				else
+				{
+					_projectId.Text = String.Format("{0}-{1}", _model.LanguageId, _model.ProjectType);
+				}
 			}
 		}
 
@@ -54,8 +62,8 @@ namespace Chorus.UI.Misc
 
 			_projectId.Text = Model.ProjectId;
 
-			_projectId.Visible = Model.NeedProjectDetails;
-			_projectIdLabel.Visible = Model.NeedProjectDetails;
+			_customAddress.Visible = Model.NeedUrlField;
+			_customAddressLabel.Visible = Model.NeedUrlField;
 
 			if (DisplayUpdated != null)
 				DisplayUpdated.Invoke(this, null);
