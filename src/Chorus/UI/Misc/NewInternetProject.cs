@@ -28,13 +28,20 @@ namespace Chorus.UI.Misc
 
 		private void UpdateFromModel()
 		{
-			var type = ConfigurationManager.AppSettings.Get("ProjectType");
-			foreach (KeyValuePair<string, string> pair in _model.Servers)
+			foreach (var pair in _model.Servers)
 			{
 				_serverCombobox.Items.Add(pair.Key);
 			}
+			if (_model.SelectedServerLabel != null)
+			{
+				_serverCombobox.SelectedItem = _model.SelectedServerLabel;
+			}
+			else
+			{
+				_serverCombobox.SelectedIndex = 0;
+			}
 			_serverCombobox.SelectedIndexChanged += OnSelectedIndexChanged;
-			_projectID.Text = String.Format("Project:\t{0}-{1}", _model.LanguageId, type);
+			_projectID.Text = String.Format("Project:\t{0}-{1}", _model.LanguageId, _model.ProjectType);
 			_password.Text = _model.Password;
 			_requirePassword.Checked = _model.Password != "";
 			_password.Enabled = _requirePassword.Checked;
