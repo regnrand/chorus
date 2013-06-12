@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
+using System.Net.Mail;
 using System.Text;
 using Chorus.VcsDrivers;
 using Jayrock.Json;
@@ -30,7 +30,7 @@ namespace Chorus.Utilities
 				string projectId;
 				ParseAddress(address, out addressUri, out projectId);
 				call["params"] = new JsonArray(new List<String> { address.Name, email, address.Password, "flex", projectId });
-				WebRequest request = WebRequest.Create(addressUri);
+				var request = WebRequest.Create(addressUri);
 				request.Method = "POST";
 				request.ContentType = "application/json; charset=UTF-8";
 				request.ContentLength = callBytes.Length;
@@ -45,10 +45,36 @@ namespace Chorus.Utilities
 
 		public static LanguageDepotApiResponse CreateProject(HttpRepositoryPath address, string email)
 		{
+			if (!CheckValidEmail(email))
+			{
+				return null;
+			}
 			using (var response = Server.CreateProject(address, email))
 			using (var stream = response.GetResponseStream())
 			{
 				return LanguageDepotApiResponse.From(stream);
+			}
+		}
+
+		private static bool CheckValidEmail(string email)
+		{
+			//Validating e-mails according to the RFC is far too troublesome to implement, just use the .NET constructor
+			//and catch since the parser is not exposed, even though it pains me to do so.
+			try
+			{
+				if (String.IsNullOrEmpty(email))
+				{
+					return true;
+				}
+				//creation will succeed if address is valid, otherwise it will throw (no better way in the MS api)
+#pragma warning disable 168
+				var test = new MailAddress(email);
+#pragma warning restore 168
+				return true;
+			}
+			catch
+			{
+				return false;
 			}
 		}
 

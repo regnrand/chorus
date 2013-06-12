@@ -24,8 +24,8 @@ namespace Chorus.UI.Misc
 		private void Init()
 		{
 			InitializeComponent();
-			_projectID.Text = _model.ProjectId;
-			_projectType.Text = @"-" + ConfigurationManager.AppSettings.Get("ProjectType");
+			_projectID.Text = _model.LanguageId;
+			_projectType.Text = @"-" + _model.ProjectType;
 			// Clear all text from the RichTextBox;
 			richTextBox1.Clear();
 			richTextBox1.SelectedText = "Normally, you should not change this. Reasons to change it include:" + Environment.NewLine + Environment.NewLine;
@@ -41,7 +41,7 @@ namespace Chorus.UI.Misc
 
 		private void _okButton_Click(object sender, EventArgs e)
 		{
-			_model.ProjectId = _projectID.Text;
+			_model.ProjectId = String.Format(@"{0}-{1}", _projectID.Text, _model.ProjectType);
 			_model.SaveSettings();
 			DialogResult = DialogResult.OK;
 			Close();

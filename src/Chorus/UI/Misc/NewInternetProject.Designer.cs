@@ -39,6 +39,8 @@
 			this._okButton = new System.Windows.Forms.Button();
 			this.serverLabel = new System.Windows.Forms.Label();
 			this._serverCombobox = new System.Windows.Forms.ComboBox();
+			this._customUrlLabel = new System.Windows.Forms.Label();
+			this._customUrl = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
 			//
 			// _description
@@ -147,6 +149,24 @@
 			this._serverCombobox.Size = new System.Drawing.Size(249, 21);
 			this._serverCombobox.TabIndex = 11;
 			//
+			// _customUrlLabel
+			//
+			this._customUrlLabel.AutoSize = true;
+			this._customUrlLabel.Location = new System.Drawing.Point(16, 97);
+			this._customUrlLabel.Name = "_customUrlLabel";
+			this._customUrlLabel.Size = new System.Drawing.Size(123, 13);
+			this._customUrlLabel.TabIndex = 12;
+			this._customUrlLabel.Text = "Enter Custom Server Url:";
+			this._customUrlLabel.Visible = false;
+			//
+			// _customUrl
+			//
+			this._customUrl.Location = new System.Drawing.Point(16, 114);
+			this._customUrl.Name = "_customUrl";
+			this._customUrl.Size = new System.Drawing.Size(249, 20);
+			this._customUrl.TabIndex = 13;
+			this._customUrl.Visible = false;
+			//
 			// NewInternetProject
 			//
 			this.AcceptButton = this._okButton;
@@ -154,6 +174,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this._cancelButton;
 			this.ClientSize = new System.Drawing.Size(371, 286);
+			this.Controls.Add(this._customUrl);
+			this.Controls.Add(this._customUrlLabel);
 			this.Controls.Add(this._serverCombobox);
 			this.Controls.Add(this.serverLabel);
 			this.Controls.Add(this._okButton);
@@ -188,5 +210,7 @@
 		private System.Windows.Forms.Button _okButton;
 		private System.Windows.Forms.Label serverLabel;
 		private System.Windows.Forms.ComboBox _serverCombobox;
+		private System.Windows.Forms.Label _customUrlLabel;
+		private System.Windows.Forms.TextBox _customUrl;
 	}
 }

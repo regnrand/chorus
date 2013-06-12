@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
-using System.Web;
 using System.Windows.Forms;
 using Chorus.Utilities;
 using Chorus.VcsDrivers;
@@ -13,8 +12,15 @@ using Palaso.Progress;
 
 namespace Chorus.UI.Misc
 {
+	/// <summary>
+	/// Contains settings and setting storage methods that are relavant for connecting to a remote server
+	/// </summary>
 	public class ServerSettingsModel
 	{
+		/// <summary>
+		/// The string for CustomLocation for use in selection lists, ect.
+		/// </summary>
+		public const string CustomLocationLabel = "Custom Location...";
 		public readonly Dictionary<string, string> Servers = new Dictionary<string, string>();
 		private string _pathToRepo;
 		private string _email;
@@ -27,7 +33,7 @@ namespace Chorus.UI.Misc
 			Servers.Add("LanguageDepot.org [private]", "hg-private.languagedepot.org");
 			Servers.Add("LanguageForge", "hg.languageforge.org");
 
-			Servers.Add("Custom Location...", "");
+			Servers.Add(CustomLocationLabel, "");
 			SelectedServerLabel = languageDepotLabel;
 		}
 
@@ -62,22 +68,7 @@ namespace Chorus.UI.Misc
 		public string Email
 		{
 			get { return _email; }
-			set { CheckValidEmail(value); }
-		}
-
-		private void CheckValidEmail(string email)
-		{
-			//Validating e-mails according to the RFC is far too troublesome to implement, just use the .NET constructor
-			//and catch since the parser is not exposed, even though it pains me to do so.
-			try
-			{
-				var test = new MailAddress(email);
-				_email = email;
-			}
-			catch
-			{
-				MessageBox.Show("Your e-mail address is not valid, please check it and re-enter.", "Invalid e-mail address");
-			}
+			set { _email = value; }
 		}
 
 		public string NameOfProjectOnRepository
@@ -175,12 +166,7 @@ namespace Chorus.UI.Misc
 		{
 			get
 			{
-				string server;
-				if (!Servers.TryGetValue(SelectedServerLabel, out server))
-				{
-					SelectedServerLabel = Servers.Keys.First();
-				}
-				return Servers[SelectedServerLabel] == string.Empty;
+				return SelectedServerLabel == CustomLocationLabel;
 			}
 		}
 

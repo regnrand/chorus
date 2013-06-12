@@ -376,9 +376,14 @@ namespace Chorus.UI.Sync
 					using (var proj = new NewInternetProject(internetModel))
 					{
 						var result = proj.ShowDialog(this);
-						if (result == DialogResult.OK)
+						if (result == DialogResult.OK && !internetModel.CustomUrlSelected)
 						{
 							var response = LanguageDepotApi.CreateProject((HttpRepositoryPath)address, internetModel.Email);
+							if (response == null)
+							{
+								MessageBox.Show(this, "Is your e-mail address valid?", "Could not create the project with your settings.");
+								return;
+							}
 							if (String.IsNullOrEmpty(response.Identifier))
 							{
 								MessageBox.Show(response.ErrorMessage, "Error creating project on server.");
