@@ -175,12 +175,6 @@
 	  <DependentUpon>ServerSettingsControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="UI\Clone\GetCloneFromInternetModel.cs" />
-	<Compile Include="UI\Clone\TargetFolderControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="UI\Clone\TargetFolderControl.Designer.cs">
-	  <DependentUpon>TargetFolderControl.cs</DependentUpon>
-	</Compile>
 	<Compile Include="UI\Clone\GetCloneFromInternetDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -457,10 +451,6 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="UI\Misc\ServerSettingsControl.resx">
 	  <DependentUpon>ServerSettingsControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="UI\Clone\TargetFolderControl.resx">
-	  <DependentUpon>TargetFolderControl.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="UI\Clone\GetCloneFromInternetDialog.resx">

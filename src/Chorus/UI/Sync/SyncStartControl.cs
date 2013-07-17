@@ -371,24 +371,44 @@ namespace Chorus.UI.Sync
 				var address = _repository.GetDefaultNetworkAddress<HttpRepositoryPath>();
 				var internetModel = new ServerSettingsModel();
 				internetModel.InitFromProjectPath(_repository.PathToRepo);
-				if (String.IsNullOrEmpty(internetModel.ProjectId))
+				if (!internetModel.ProjectExistsOnServer)
 				{
 					using (var proj = new NewInternetProject(internetModel))
 					{
 						var result = proj.ShowDialog(this);
 						if (result == DialogResult.OK && !internetModel.CustomUrlSelected)
 						{
-							var response = LanguageDepotApi.CreateProject((HttpRepositoryPath)address, internetModel.Email);
+							address = _repository.GetDefaultNetworkAddress<HttpRepositoryPath>();
+							LanguageDepotApiResponse response = null;
+							try
+							{
+								response = LanguageDepotApi.CreateProject(new Uri(address.URI), internetModel.ProjectId, internetModel.ProjectPassword,
+																		  internetModel.ProjectType, internetModel.ProjectId,
+																		  internetModel.Email);
+							}
+							catch (Exception)
+							{
+								MessageBox.Show("The server you tried to access may be down.", "Could not connect to server.");
+								internetModel.ProjectExistsOnServer = false;
+								internetModel.SaveSettings();
+								return;
+							}
 							if (response == null)
 							{
+								internetModel.ProjectExistsOnServer = false;
+								internetModel.SaveSettings();
 								MessageBox.Show(this, "Is your e-mail address valid?", "Could not create the project with your settings.");
 								return;
 							}
 							if (String.IsNullOrEmpty(response.Identifier))
 							{
-								MessageBox.Show(response.ErrorMessage, "Error creating project on server.");
+								internetModel.ProjectExistsOnServer = false;
+								internetModel.SaveSettings();
+								MessageBox.Show(response.ErrorMessage ?? "Unidentified error.", "Error creating project on server.");
 								return;
 							}
+							internetModel.ProjectExistsOnServer = true;
+							internetModel.SaveSettings();
 						}
 						else
 						{

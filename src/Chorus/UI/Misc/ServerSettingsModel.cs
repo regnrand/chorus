@@ -32,6 +32,7 @@ namespace Chorus.UI.Misc
 			Servers.Add("LanguageDepot.org [Safe Mode]", "hg-public.languagedepot.org");
 			Servers.Add("LanguageDepot.org [private]", "hg-private.languagedepot.org");
 			Servers.Add("LanguageForge", "hg.languageforge.org");
+			Servers.Add("DontCommitMe", "languagedepotapi.local");
 
 			Servers.Add(CustomLocationLabel, "");
 			SelectedServerLabel = languageDepotLabel;
@@ -97,10 +98,9 @@ namespace Chorus.UI.Misc
 				}
 				else
 				{
-					return "http://" +
-						   HttpUtilityFromMono.UrlEncode((string)AccountName) + ":" +
-						   HttpUtilityFromMono.UrlEncode((string)Password) + "@" + SelectedServerPath + "/" +
-						   HttpUtilityFromMono.UrlEncode(ProjectId);
+					// If old style account name settings exist build the url with them, otherwise ignore
+					return "http://" + (AccountName != null ? HttpUtilityFromMono.UrlEncode((string)AccountName) + ":" + HttpUtilityFromMono.UrlEncode((string)Password) + "@" : "")
+									 + SelectedServerPath + "/" + HttpUtilityFromMono.UrlEncode(ProjectId);
 				}
 			}
 		}
@@ -115,24 +115,26 @@ namespace Chorus.UI.Misc
 				{
 					return true;
 				}
-				else
-				{
-					try
-					{
-						return !string.IsNullOrEmpty(ProjectId) &&
-							   !string.IsNullOrEmpty(AccountName) &&
-							   !string.IsNullOrEmpty(Password);
-					}
-					catch (Exception)
-					{
-						return false;
-					}
-				}
+				return !string.IsNullOrEmpty(ProjectId);
 			}
 		}
 
+		/// <summary>
+		/// The user password, only valid for custom servers or old projects
+		/// </summary>
+		[Obsolete(@"Older saved configurations still use this")]
 		public string Password { get; set; }
+
+		/// <summary>
+		/// The user account name, only valid for custom servers, or old projects
+		/// </summary>
+		[Obsolete(@"Older saved configurations still use this")]
 		public string AccountName { get; set; }
+
+		/// <summary>
+		/// Password for accessing the project that these server settings point to
+		/// </summary>
+		public string ProjectPassword { get; set; }
 
 		public bool HaveGoodUrl
 		{
@@ -171,7 +173,7 @@ namespace Chorus.UI.Misc
 		}
 
 		/// <summary>
-		/// Save the settings in the folder's .hg, creating the folder and settings if necessary.
+		/// Save the settings in the hgrc file (under .hg), creating the folder and settings if necessary.
 		/// This is only available if you previously called InitFromProjectPath().  It isn't used
 		/// in the GetCloneFromInternet scenario.
 		/// </summary>
@@ -187,6 +189,8 @@ namespace Chorus.UI.Misc
 			// Use safer SetTheOnlyAddressOfThisType method, as it won't clobber a shared network setting, if that was the clone source.
 			repo.SetTheOnlyAddressOfThisType(new HttpRepositoryPath(AliasName, URL, false));
 			repo.SetProjectId(ProjectId);
+			repo.SetProjectPassword(ProjectPassword);
+			repo.SetProjectExistsOnServer(ProjectExistsOnServer);
 		}
 
 		public string AliasName
@@ -212,6 +216,8 @@ namespace Chorus.UI.Misc
 			}
 		}
 
+		public bool ProjectExistsOnServer {get; set; }
+
 		/// <summary>
 		/// Use this to make use of, say, the contents of the clipboard (if it looks like a url)
 		/// </summary>
@@ -232,6 +238,8 @@ namespace Chorus.UI.Misc
 			LanguageId = repo.LanguageCode;
 			ProjectType = repo.ProjectType;
 			ProjectId = repo.ProjectId;
+			ProjectPassword = repo.ProjectPassword;
+			ProjectExistsOnServer = repo.ProjectExistsOnServer;
 			var address = repo.GetDefaultNetworkAddress<HttpRepositoryPath>();
 			if (address != null)
 			{

@@ -19,18 +19,17 @@ namespace Chorus.Utilities
 		internal class LanguageDepotApiServer : ILanguageDepotServer
 		{
 			private int _id;
-			public HttpWebResponse CreateProject(HttpRepositoryPath address, string email)
+			public HttpWebResponse CreateProject(Uri address, string projectName,
+												 string projectPassword, string projectType,
+												 string projectId, string email)
 			{
 				var call = new JsonObject();
 				call["id"] = ++_id;
 				call["method"] = "addProjectWithPassword";
 				string callString = JsonConvert.ExportToString(call);
 				byte[] callBytes = Encoding.UTF8.GetBytes(callString);
-				Uri addressUri;
-				string projectId;
-				ParseAddress(address, out addressUri, out projectId);
-				call["params"] = new JsonArray(new List<String> { address.Name, email, address.Password, "flex", projectId });
-				var request = WebRequest.Create(addressUri);
+				call["params"] = new JsonArray(new List<String> { projectName, email, projectPassword, projectType, projectId });
+				var request = WebRequest.Create(address);
 				request.Method = "POST";
 				request.ContentType = "application/json; charset=UTF-8";
 				request.ContentLength = callBytes.Length;
@@ -43,13 +42,15 @@ namespace Chorus.Utilities
 			}
 		}
 
-		public static LanguageDepotApiResponse CreateProject(HttpRepositoryPath address, string email)
+		public static LanguageDepotApiResponse CreateProject(Uri address, string projectName,
+															 string projectPassword, string projectType,
+															 string projectId, string email)
 		{
 			if (!CheckValidEmail(email))
 			{
 				return null;
 			}
-			using (var response = Server.CreateProject(address, email))
+			using (var response = Server.CreateProject(address, projectName, projectPassword, projectType, projectId, email))
 			using (var stream = response.GetResponseStream())
 			{
 				return LanguageDepotApiResponse.From(stream);
@@ -78,28 +79,30 @@ namespace Chorus.Utilities
 			}
 		}
 
-		public static void ParseAddress(HttpRepositoryPath address, out Uri serverAddress, out string projectId)
-		{
-			var apiPage = @"src/LanguageDepot/LanguageDepotAPI.php";
-			var addressUri = new UriBuilder(address.URI);
-			var builder = new UriBuilder(Uri.UriSchemeHttp, addressUri.Host, 80, apiPage);
-			if (!String.IsNullOrEmpty(address.UserName))
-			{
-				builder.UserName = address.UserName;
-				builder.Password = address.Password;
-			}
-			else
-			{
-				builder.UserName = @"FLExUser";
-				builder.Password = @"inscrutable";
-			}
-			serverAddress = builder.Uri;
-			projectId = addressUri.Path.Substring(addressUri.Path.LastIndexOf('/') + 1);
-		}
+		//public static void ParseAddress(HttpRepositoryPath address, out Uri serverAddress, out string projectId)
+		//{
+		//    var apiPage = @"src/LanguageDepot/LanguageDepotAPI.php";
+		//    var addressUri = new UriBuilder(address.URI);
+		//    var builder = new UriBuilder(Uri.UriSchemeHttp, addressUri.Host, 80, apiPage);
+		//    if (!String.IsNullOrEmpty(address.UserName))
+		//    {
+		//        builder.UserName = address.UserName;
+		//        builder.Password = address.Password;
+		//    }
+		//    else
+		//    {
+		//        builder.UserName = @"FLExUser";
+		//        builder.Password = @"inscrutable";
+		//    }
+		//    serverAddress = builder.Uri;
+		//    projectId = addressUri.Path.Substring(addressUri.Path.LastIndexOf('/') + 1);
+		//}
 	}
 
 	internal interface ILanguageDepotServer
 	{
-		HttpWebResponse CreateProject(HttpRepositoryPath address, string email);
+		HttpWebResponse CreateProject(Uri address, string projectName,
+									  string projectPassword, string projectType,
+									  string projectId, string email);
 	}
 }

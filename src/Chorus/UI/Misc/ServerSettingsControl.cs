@@ -69,9 +69,9 @@ namespace Chorus.UI.Misc
 				DisplayUpdated.Invoke(this, null);
 		}
 
-		private void _projectId_TextChanged(object sender, EventArgs e)
+		private void CustomAddressTextChanged(object sender, EventArgs e)
 		{
-			Model.ProjectId = _projectId.Text.Trim();
+			Model.CustomUrl = _customAddress.Text.Trim();
 			UpdateDisplay();
 		}
 
@@ -81,6 +81,18 @@ namespace Chorus.UI.Misc
 				return;
 
 			UpdateDisplay();
+		}
+
+		private void ChangeProjectLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			using (var settingsDialog = new ChangeProjectIDDialog(_model))
+			{
+				var result = settingsDialog.ShowDialog(this);
+				if (result == DialogResult.OK)
+				{
+					UpdateDisplay();
+				}
+			}
 		}
 	}
 }

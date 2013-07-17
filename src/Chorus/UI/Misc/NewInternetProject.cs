@@ -73,9 +73,10 @@ namespace Chorus.UI.Misc
 				_customUrlLabel.Visible = false;
 				_customUrl.Visible = false;
 			}
-			_projectID.Text = String.Format("Project:\t{0}-{1}", _model.LanguageId, _model.ProjectType);
-			_password.Text = _model.Password;
-			_requirePassword.Checked = _model.Password != "";
+			_projectID.Text = String.IsNullOrWhiteSpace(_model.ProjectId) ? String.Format("Project:\t{0}-{1}", _model.LanguageId, _model.ProjectType)
+																		  : String.Format("Project:\t{0}", _model.ProjectId);
+			_password.Text = _model.ProjectPassword;
+			_requirePassword.Checked = _model.ProjectPassword != "";
 			_password.Enabled = _requirePassword.Checked;
 			_email.Text = _model.Email;
 			Invalidate();
@@ -116,7 +117,7 @@ namespace Chorus.UI.Misc
 				_model.CustomUrl = _customUrl.Text;
 			}
 			_model.Email = _email.Text;
-			_model.Password = _requirePassword.Checked ? _password.Text : "";
+			_model.ProjectPassword = _requirePassword.Checked ? _password.Text : "";
 			if (String.IsNullOrWhiteSpace(_model.ProjectId))
 			{
 				// The projectId isn't set directly in this dialog, but the default one constructed
@@ -128,7 +129,7 @@ namespace Chorus.UI.Misc
 		private void _requirePassword_CheckedChanged(object sender, EventArgs e)
 		{
 			_password.Enabled = _requirePassword.Checked;
-			_password.Text = !_requirePassword.Checked ? "" : _model.Password;
+			_password.Text = !_requirePassword.Checked ? "" : _model.ProjectPassword;
 		}
 	}
 }

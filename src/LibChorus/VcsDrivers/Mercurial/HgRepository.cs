@@ -1311,6 +1311,10 @@ namespace Chorus.VcsDrivers.Mercurial
 			doc.SaveAndGiveMessageIfCannot();
 		}
 
+		/// <summary>
+		/// A null address will result in the removal of the only address of this type.
+		/// </summary>
+		/// <param name="address"></param>
 		public void SetTheOnlyAddressOfThisType(RepositoryAddress address)
 		{
 			List<RepositoryAddress> addresses = new List<RepositoryAddress>(GetRepositoryPathsInHgrc());
@@ -1319,7 +1323,10 @@ namespace Chorus.VcsDrivers.Mercurial
 			{
 				addresses.Remove(match);
 			}
-			addresses.Add(address);
+			if (address != null)
+			{
+				addresses.Add(address);
+			}
 			SetKnownRepositoryAddresses(addresses);
 		}
 
@@ -2132,6 +2139,26 @@ namespace Chorus.VcsDrivers.Mercurial
 			}
 		}
 
+		public string ProjectPassword
+		{
+			get
+			{
+				var doc = GetMercurialConfigForRepository();
+				var section = doc.Sections.GetOrCreate("RepositoryInformation");
+				return section.GetValue("ProjectPassword");
+			}
+		}
+
+		public bool ProjectExistsOnServer
+		{
+			get
+			{
+				var doc = GetMercurialConfigForRepository();
+				var section = doc.Sections.GetOrCreate("RepositoryInformation");
+				return section.GetValue("ProjectExistsOnServer") != null && bool.Parse(section.GetValue("ProjectExistsOnServer"));
+			}
+		}
+
 		public void SetProjectTypeAndLanguageCode(string type, string languageId)
 		{
 			CheckAndUpdateHgrc();
@@ -2150,6 +2177,23 @@ namespace Chorus.VcsDrivers.Mercurial
 			section.Set("ProjectId", projectId); //usually the RepositoryType-LanguageId but not always
 			doc.SaveAndThrowIfCannot();
 		}
-	}
 
+		public void SetProjectPassword(string projectPassword)
+		{
+			CheckAndUpdateHgrc();
+			var doc = GetMercurialConfigForRepository();
+			var section = doc.Sections.GetOrCreate("RepositoryInformation");
+			section.Set("ProjectPassword", projectPassword ?? @""); //password for access to this repository
+			doc.SaveAndThrowIfCannot();
+		}
+
+		public void SetProjectExistsOnServer(bool exists)
+		{
+			CheckAndUpdateHgrc();
+			var doc = GetMercurialConfigForRepository();
+			var section = doc.Sections.GetOrCreate("RepositoryInformation");
+			section.Set("ProjectExistsOnServer", exists.ToString()); //usually the RepositoryType-LanguageId but not always
+			doc.SaveAndThrowIfCannot();
+		}
+	}
 }
