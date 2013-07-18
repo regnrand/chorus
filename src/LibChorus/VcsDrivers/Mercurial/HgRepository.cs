@@ -1331,11 +1331,15 @@ namespace Chorus.VcsDrivers.Mercurial
 			var section = doc.Sections.GetOrCreate("paths");
 			foreach (var address in addresses)
 			{
-				section.Set(address.Name, address.URI);
+				address.WriteConfig(section);
 			}
 			doc.SaveAndGiveMessageIfCannot();
 		}
 
+		/// <summary>
+		/// A null address will result in the removal of the only address of this type.
+		/// </summary>
+		/// <param name="address"></param>
 		public void SetTheOnlyAddressOfThisType(RepositoryAddress address)
 		{
 			List<RepositoryAddress> addresses = new List<RepositoryAddress>(GetRepositoryPathsInHgrc());
@@ -1344,7 +1348,10 @@ namespace Chorus.VcsDrivers.Mercurial
 			{
 				addresses.Remove(match);
 			}
-			addresses.Add(address);
+			if (address != null)
+			{
+				addresses.Add(address);
+			}
 			SetKnownRepositoryAddresses(addresses);
 		}
 
@@ -1560,8 +1567,6 @@ namespace Chorus.VcsDrivers.Mercurial
 			}
 		}
 
-
-
 		public void RecoverFromInterruptedTransactionIfNeeded()
 		{
 			CheckAndUpdateHgrc();
@@ -1678,8 +1683,6 @@ namespace Chorus.VcsDrivers.Mercurial
 			lockPath = Path.Combine(lockPath, "lock");
 			return RemoveOldLockFile(processNameToMatch, lockPath, registerWarningIfFound);
 		}
-
-
 
 		private bool RemoveOldLockFile(string processNameToMatch, string pathToLock, bool registerWarningIfFound)
 		{
@@ -2060,18 +2063,6 @@ namespace Chorus.VcsDrivers.Mercurial
 				return false;
 			}
 
-			if (string.IsNullOrEmpty(address.UserName))
-			{
-				message = "The account name is missing.";
-				return false;
-			}
-
-			if (string.IsNullOrEmpty(address.Password))
-			{
-				message = string.Format("The password for {0} is missing.", uri.Host);
-				return false;
-			}
-
 			message = string.Format("Ready to send/receive to {0} with project '{1}' and user '{2}'",
 				uri.Host, uri.PathAndQuery.Trim(new char[]{'/'}), address.UserName);
 
@@ -2145,6 +2136,98 @@ namespace Chorus.VcsDrivers.Mercurial
 				return Directory.Exists(Path.Combine(_pathToRepository, ".hg"));
 			}
 		}
-	}
 
+		/// <summary>
+		/// The ISO 639-3 language code stored in the hgrc file
+		/// </summary>
+		public string LanguageCode
+		{
+			get
+			{
+				var doc = GetMercurialConfigForRepository();
+				var section = doc.Sections.GetOrCreate("RepositoryInformation");
+				return section.GetValue("LanguageId");
+			}
+		}
+
+		/// <summary>
+		/// The project type e.g. flex, bloom, dict stored in the hgrc file
+		/// </summary>
+		public string ProjectType
+		{
+			get
+			{
+				var doc = GetMercurialConfigForRepository();
+				var section = doc.Sections.GetOrCreate("RepositoryInformation");
+				return section.GetValue("RepositoryType");
+			}
+		}
+
+		public string ProjectId
+		{
+			get
+			{
+				var doc = GetMercurialConfigForRepository();
+				var section = doc.Sections.GetOrCreate("RepositoryInformation");
+				return section.GetValue("ProjectId");
+			}
+		}
+
+		public string ProjectPassword
+		{
+			get
+			{
+				var doc = GetMercurialConfigForRepository();
+				var section = doc.Sections.GetOrCreate("RepositoryInformation");
+				return section.GetValue("ProjectPassword");
+			}
+		}
+
+		public bool ProjectExistsOnServer
+		{
+			get
+			{
+				var doc = GetMercurialConfigForRepository();
+				var section = doc.Sections.GetOrCreate("RepositoryInformation");
+				return section.GetValue("ProjectExistsOnServer") != null && bool.Parse(section.GetValue("ProjectExistsOnServer"));
+			}
+		}
+
+		public void SetProjectTypeAndLanguageCode(string type, string languageId)
+		{
+			CheckAndUpdateHgrc();
+			var doc = GetMercurialConfigForRepository();
+			var section = doc.Sections.GetOrCreate("RepositoryInformation");
+			section.Set("RepositoryType", type);
+			section.Set("LanguageId", languageId);
+			doc.SaveAndThrowIfCannot();
+		}
+
+		public void SetProjectId(string projectId)
+		{
+			CheckAndUpdateHgrc();
+			var doc = GetMercurialConfigForRepository();
+			var section = doc.Sections.GetOrCreate("RepositoryInformation");
+			section.Set("ProjectId", projectId); //usually the RepositoryType-LanguageId but not always
+			doc.SaveAndThrowIfCannot();
+		}
+
+		public void SetProjectPassword(string projectPassword)
+		{
+			CheckAndUpdateHgrc();
+			var doc = GetMercurialConfigForRepository();
+			var section = doc.Sections.GetOrCreate("RepositoryInformation");
+			section.Set("ProjectPassword", projectPassword ?? @""); //password for access to this repository
+			doc.SaveAndThrowIfCannot();
+		}
+
+		public void SetProjectExistsOnServer(bool exists)
+		{
+			CheckAndUpdateHgrc();
+			var doc = GetMercurialConfigForRepository();
+			var section = doc.Sections.GetOrCreate("RepositoryInformation");
+			section.Set("ProjectExistsOnServer", exists.ToString()); //usually the RepositoryType-LanguageId but not always
+			doc.SaveAndThrowIfCannot();
+		}
+	}
 }

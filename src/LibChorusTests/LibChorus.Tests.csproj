@@ -72,6 +72,10 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\..\lib\common\Autofac.dll</HintPath>
 	</Reference>
+	<Reference Include="Jayrock.Json, Version=0.9.12915.0, Culture=neutral, processorArchitecture=MSIL">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\..\lib\Debug\Jayrock.Json.dll</HintPath>
+	</Reference>
 	<Reference Include="Ionic.Zip.Reduced, Version=1.9.1.5, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\..\lib\common\Ionic.Zip.Reduced.dll</HintPath>
@@ -90,6 +94,7 @@
 	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Core" />
+	<Reference Include="System.Runtime.Serialization" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -157,6 +162,7 @@
 	<Compile Include="sync\Synchronizer.BadSituationTests.cs" />
 	<Compile Include="sync\SyncScenarioTests.cs" />
 	<Compile Include="sync\UsbRepositorySourceTests.cs" />
+	<Compile Include="utilities\LanguageDepotAPITests.cs" />
 	<Compile Include="utilities\UrlHelperTests.cs" />
 	<Compile Include="utilities\MultiMapTests.cs" />
 	<Compile Include="utilities\XmlUtilitiesTests.cs" />

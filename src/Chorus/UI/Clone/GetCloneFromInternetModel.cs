@@ -32,6 +32,10 @@ namespace Chorus.UI.Clone
 
 		public string ParentDirectoryToPutCloneIn { get; set; }
 
+		/// <summary>
+		/// The type of project we will be retrieving from the internet (i.e. dictionary, bloom, flex)
+		/// </summary>
+		public string ProjectType { get; set; }
 
 		public override void InitFromUri(string url)
 		{

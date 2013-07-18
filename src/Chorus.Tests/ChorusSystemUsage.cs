@@ -36,7 +36,7 @@ namespace Chorus.Tests
 			_someDataFilePath = _someDataFile.Path;
 
 			_chorusSystem = new ChorusSystem(_dataFolderRoot);
-			_chorusSystem.Init("john");
+			_chorusSystem.Init("john", "Sample", "en");
 		}
 
 		[TearDown]
@@ -54,7 +54,7 @@ namespace Chorus.Tests
 		public void CreateARepositoryIfOneDoesntAlreadyExist()
 		{
 			var cs = new ChorusSystem(_dataFolderRoot);
-			cs.Init(string.Empty);
+			cs.Init(string.Empty, "Sample", "en");
 			//before your application closes, call:
 			cs.Dispose();
 		}

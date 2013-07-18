@@ -65,7 +65,7 @@ namespace SampleApp
 				WritingSystemForNoteContent = new TestWritingSystem("Bradley Hand ITC")
 			};
 
-			_chorusSystem.Init(userName);
+			_chorusSystem.Init(userName, "SampleApp", "en");
 
 
 			_chorusSystem.Repository.SetKnownRepositoryAddresses(new RepositoryAddress[] {_serverRepository});

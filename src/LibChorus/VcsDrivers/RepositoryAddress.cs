@@ -7,6 +7,7 @@ using System.Net.NetworkInformation;
 using Chorus.Utilities;
 using Palaso.UsbDrive;
 using Chorus.VcsDrivers.Mercurial;
+using Nini.Ini;
 using Palaso.IO;
 using Palaso.Progress;
 using Palaso.Reporting;
@@ -91,8 +92,6 @@ namespace Chorus.VcsDrivers
 			return uri.ToLower().Contains("hg-test.languageforge.org") || uri.ToLower().Contains("resumable");
 		}
 
-
-
 		/// <summary>
 		/// THis will be false for, say, usb-keys or shared internet repos
 		/// but true for other people on LANs (maybe?)
@@ -132,7 +131,6 @@ namespace Chorus.VcsDrivers
 			return null;
 		}
 
-
 		public override string ToString()
 		{
 			return Name;
@@ -142,6 +140,11 @@ namespace Chorus.VcsDrivers
 		{
 			return Name;
 		}
+
+		public virtual void WriteConfig(IniSection section)
+		{
+			section.Set(Name, URI);
+		}
 	}
 
 	public class HttpRepositoryPath : RepositoryAddress
@@ -150,6 +153,16 @@ namespace Chorus.VcsDrivers
 			: base(name, uri, readOnly)
 		{
 		}
+
+		/// <summary>
+		/// The type of the project that this repository address works with.
+		/// </summary>
+		public string ProjectType { get; set; }
+
+		/// <summary>
+		/// Different from the project name but used for creating and identifying remote repositories.
+		/// </summary>
+		public string ProjectLanguageId { get; set; }
 
 		/// <summary>
 		/// Gets what the uri of the named repository would be, on this source. I.e., gets the full path.

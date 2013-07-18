@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Net.Mail;
+using System.Windows.Forms;
 using Chorus.Utilities;
 using Chorus.VcsDrivers;
 using Chorus.VcsDrivers.Mercurial;
@@ -12,10 +13,18 @@ using Palaso.Progress;
 
 namespace Chorus.UI.Misc
 {
+	/// <summary>
+	/// Contains settings and setting storage methods that are relavant for connecting to a remote server
+	/// </summary>
 	public class ServerSettingsModel
 	{
+		/// <summary>
+		/// The string for CustomLocation for use in selection lists, ect.
+		/// </summary>
+		public const string CustomLocationLabel = "Custom Location...";
 		public readonly Dictionary<string, string> Servers = new Dictionary<string, string>();
 		private string _pathToRepo;
+		private string _email;
 
 		public ServerSettingsModel()
 		{
@@ -24,39 +33,22 @@ namespace Chorus.UI.Misc
 			Servers.Add("LanguageDepot.org [Safe Mode]", "hg-public.languagedepot.org");
 			Servers.Add("LanguageDepot.org [private]", "hg-private.languagedepot.org");
 			Servers.Add("LanguageForge", "hg.languageforge.org");
+			Servers.Add("DontCommitMe", "languagedepotapi.local");
 
 			Servers.Add(LocalizationManager.GetString("Messages.CustomLocation", "Custom Location..."), "");
 			SelectedServerLabel = languageDepotLabel;
-		}
-
-
-		///<summary>
-		/// Show settings for an existing project. The project doesn't need to have any
-		/// previous chorus activity (e.g. no .hg folder is needed).
-		///</summary>
-		///<param name="path"></param>
-		public virtual void InitFromProjectPath(string path)
-		{
-			RequireThat.Directory(path).Exists();
-
-			var repo = HgRepository.CreateOrUseExisting(path, new NullProgress());
-			_pathToRepo = repo.PathToRepo;
-
-			var address = repo.GetDefaultNetworkAddress<HttpRepositoryPath>();
-			if (address != null)
-			{
-				InitFromUri(address.URI);
-			}
-
-			//otherwise, just leave everything in the default state
 		}
 
 		public virtual void InitFromUri(string url)
 		{
 			SetServerLabelFromUrl(url);
 			Password = UrlHelper.GetPassword(url);
+			if (String.IsNullOrEmpty(LanguageId))
+			{
+				//For legacy configurations pull the ProjectName out of the url
+				ProjectId = UrlHelper.GetPathAfterHost(url);
+			}
 			AccountName = UrlHelper.GetUserName(url);
-			ProjectId = UrlHelper.GetPathAfterHost(url);
 			CustomUrl = UrlHelper.GetPathOnly(url);
 			//CustomUrlSelected = true;
 		}
@@ -75,6 +67,12 @@ namespace Chorus.UI.Misc
 			}
 		}
 
+		public string Email
+		{
+			get { return _email; }
+			set { _email = value; }
+		}
+
 		public string NameOfProjectOnRepository
 		{
 			get
@@ -84,6 +82,10 @@ namespace Chorus.UI.Misc
 				return ProjectId;
 			}
 		}
+
+		public string LanguageId { get; set; }
+
+		public string ProjectType { get; set; }
 
 		public string ProjectId { get; set; }
 
@@ -97,10 +99,9 @@ namespace Chorus.UI.Misc
 				}
 				else
 				{
-					return "http://" +
-						   HttpUtilityFromMono.UrlEncode((string)AccountName) + ":" +
-						   HttpUtilityFromMono.UrlEncode((string)Password) + "@" + SelectedServerPath + "/" +
-						   HttpUtilityFromMono.UrlEncode(ProjectId);
+					// If old style account name settings exist build the url with them, otherwise ignore
+					return "http://" + (AccountName != null ? HttpUtilityFromMono.UrlEncode((string)AccountName) + ":" + HttpUtilityFromMono.UrlEncode((string)Password) + "@" : "")
+									 + SelectedServerPath + "/" + HttpUtilityFromMono.UrlEncode(ProjectId);
 				}
 			}
 		}
@@ -111,28 +112,30 @@ namespace Chorus.UI.Misc
 		{
 			get
 			{
-				if (!NeedProjectDetails)
+				if (!NeedUrlField)
 				{
 					return true;
 				}
-				else
-				{
-					try
-					{
-						return !string.IsNullOrEmpty(ProjectId) &&
-							   !string.IsNullOrEmpty(AccountName) &&
-							   !string.IsNullOrEmpty(Password);
-					}
-					catch (Exception)
-					{
-						return false;
-					}
-				}
+				return !string.IsNullOrEmpty(ProjectId);
 			}
 		}
 
+		/// <summary>
+		/// The user password, only valid for custom servers or old projects
+		/// </summary>
+		[Obsolete(@"Older saved configurations still use this")]
 		public string Password { get; set; }
+
+		/// <summary>
+		/// The user account name, only valid for custom servers, or old projects
+		/// </summary>
+		[Obsolete(@"Older saved configurations still use this")]
 		public string AccountName { get; set; }
+
+		/// <summary>
+		/// Password for accessing the project that these server settings point to
+		/// </summary>
+		public string ProjectPassword { get; set; }
 
 		public bool HaveGoodUrl
 		{
@@ -157,26 +160,21 @@ namespace Chorus.UI.Misc
 			get; set;
 		}
 
-		public bool NeedProjectDetails
+		public bool NeedUrlField
 		{
-			get { return !CustomUrlSelected; }
+			get { return CustomUrlSelected; }
 		}
 
 		public bool CustomUrlSelected
 		{
 			get
 			{
-				string server;
-				if (!Servers.TryGetValue(SelectedServerLabel, out server))
-				{
-					SelectedServerLabel = Servers.Keys.First();
-				}
-				return Servers[SelectedServerLabel] == string.Empty;
+				return SelectedServerLabel == CustomLocationLabel;
 			}
 		}
 
 		/// <summary>
-		/// Save the settings in the folder's .hg, creating the folder and settings if necessary.
+		/// Save the settings in the hgrc file (under .hg), creating the folder and settings if necessary.
 		/// This is only available if you previously called InitFromProjectPath().  It isn't used
 		/// in the GetCloneFromInternet scenario.
 		/// </summary>
@@ -191,6 +189,9 @@ namespace Chorus.UI.Misc
 
 			// Use safer SetTheOnlyAddressOfThisType method, as it won't clobber a shared network setting, if that was the clone source.
 			repo.SetTheOnlyAddressOfThisType(new HttpRepositoryPath(AliasName, URL, false));
+			repo.SetProjectId(ProjectId);
+			repo.SetProjectPassword(ProjectPassword);
+			repo.SetProjectExistsOnServer(ProjectExistsOnServer);
 		}
 
 		public string AliasName
@@ -216,6 +217,8 @@ namespace Chorus.UI.Misc
 			}
 		}
 
+		public bool ProjectExistsOnServer {get; set; }
+
 		/// <summary>
 		/// Use this to make use of, say, the contents of the clipboard (if it looks like a url)
 		/// </summary>
@@ -225,6 +228,26 @@ namespace Chorus.UI.Misc
 			{
 				InitFromUri(url);
 			}
+		}
+
+		public virtual void InitFromProjectPath(string path)
+		{
+			RequireThat.Directory(path).Exists();
+
+			var repo = HgRepository.CreateOrUseExisting(path, new NullProgress());
+			_pathToRepo = repo.PathToRepo;
+			LanguageId = repo.LanguageCode;
+			ProjectType = repo.ProjectType;
+			ProjectId = repo.ProjectId;
+			ProjectPassword = repo.ProjectPassword;
+			ProjectExistsOnServer = repo.ProjectExistsOnServer;
+			var address = repo.GetDefaultNetworkAddress<HttpRepositoryPath>();
+			if (address != null)
+			{
+				InitFromUri(address.URI);
+			}
+
+			//otherwise, just leave everything in the default state
 		}
 	}
 }

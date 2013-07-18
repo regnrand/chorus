@@ -14,8 +14,7 @@ namespace Chorus.UI.Clone
 		private readonly GetCloneFromInternetModel _model;
 		private readonly BackgroundWorker _backgroundWorker;
 		private enum State { AskingUserForURL, MakingClone, Success, Error,Cancelled}
-
-		private TargetFolderControl _targetFolderControl;
+		private Button _downloadButton;
 		private State _state;
 		private ServerSettingsControl _serverSettingsControl;
 
@@ -57,23 +56,15 @@ namespace Chorus.UI.Clone
 			_serverSettingsControl.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
 			Controls.Add(_serverSettingsControl);
 
-			_targetFolderControl = new TargetFolderControl(_model);
-			_targetFolderControl.Anchor = (AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
-			_targetFolderControl._downloadButton.Click+=OnDownloadClick;
-			_targetFolderControl.Location = new Point(0, _serverSettingsControl.Height +10);
-			MinimumSize = new Size(_targetFolderControl.MinimumSize.Width+20, _targetFolderControl.Bottom +20);
-			if (_targetFolderControl.Bottom +30> Bottom)
-			{
-				this.Size = new Size(this.Width,_targetFolderControl.Bottom + 30);
-			}
-			_targetFolderControl.TabIndex = 1;
-			this.Controls.Add(_targetFolderControl);
+			_downloadButton = new Button();
+			_downloadButton.Text = "Download"; //<- Localize this
+			_downloadButton.Top = _okButton.Top;
+			_downloadButton.Left = _okButton.Left;
+			Controls.Add(_downloadButton);
 			_okButton.TabIndex = 90;
 			_cancelButton.TabIndex = 91;
 
 			_fixSettingsButton.Left = _cancelButton.Left;
-			 _targetFolderControl._downloadButton.Top = _okButton.Top-_targetFolderControl.Top	;
-			 _targetFolderControl._downloadButton.Left = _okButton.Left - 15;
 
 			_logBox.GetDiagnosticsMethod = (progress) =>
 											{
@@ -121,7 +112,7 @@ namespace Chorus.UI.Clone
 					_logBox.Visible = false;
 					_okButton.Visible = false;
 					_progressBar.Visible = false;
-					_targetFolderControl.Visible = true;
+					_downloadButton.Visible = true;
 					_cancelButton.Enabled = true;
 					_cancelButton.Visible = true;
 					_cancelTaskButton.Visible = false;
@@ -134,7 +125,7 @@ namespace Chorus.UI.Clone
 					_serverSettingsControl.DisplayUpdated -= ServerSettingsControlOnDisplayUpdated;
 					_progressBar.Focus();
 					_progressBar.Select();
-					_targetFolderControl.Visible = false;
+					_downloadButton.Visible = false;
 					_statusImage.Visible = false;
 					_progressBar.Visible = true;
 					_progressBar.Style = ProgressBarStyle.Marquee;
@@ -158,7 +149,7 @@ namespace Chorus.UI.Clone
 					_statusLabel.Visible = true;
 					_statusLabel.Text = LocalizationManager.GetString("Messages.Done", "Done.");
 					_progressBar.Visible = false;
-					_targetFolderControl.Visible = false;
+					_downloadButton.Visible = false;
 					_statusLabel.Left = _statusImage.Right + 10;
 					_statusImage.Visible = true;
 					_statusImage.ImageKey=LocalizationManager.GetString("Messages.Success", "Success");
@@ -181,7 +172,7 @@ namespace Chorus.UI.Clone
 					_statusLabel.Visible = true;
 					_statusLabel.Text = LocalizationManager.GetString("Messages.Failed", "Failed.");
 					_progressBar.Visible = false;
-					_targetFolderControl.Visible = false;
+					_downloadButton.Visible = false;
 					_statusLabel.Left = _statusImage.Right + 10;
 					_statusImage.ImageKey = LocalizationManager.GetString("Common.Error", "Error");
 					_statusImage.Visible = true;
@@ -196,7 +187,7 @@ namespace Chorus.UI.Clone
 					_statusLabel.Visible = true;
 					_statusLabel.Text = LocalizationManager.GetString("Messages.Cancelled", "Cancelled.");
 					_progressBar.Visible = false;
-					_targetFolderControl.Visible = false;
+					_downloadButton.Visible = false;
 					_statusLabel.Left =  _progressBar.Left;
 					_statusImage.Visible = false;
 					_statusProgress.Visible = false;
@@ -205,12 +196,12 @@ namespace Chorus.UI.Clone
 					throw new ArgumentOutOfRangeException();
 			}
 
-			_serverSettingsControl.Visible = _targetFolderControl.Visible;
+			_serverSettingsControl.Visible = _downloadButton.Visible;
 		}
 
 		private void ServerSettingsControlOnDisplayUpdated(object sender, EventArgs eventArgs)
 		{
-			_targetFolderControl.UpdateDisplay();
+			//_targetFolderControl.UpdateDisplay();
 		}
 
 		private void OnLoad(object sender, EventArgs e)

@@ -14,5 +14,8 @@
 	<Setting Name="ShowChorusHubInSendReceive" Type="System.Boolean" Scope="User">
 	  <Value Profile="(Default)">True</Value>
 	</Setting>
+	<Setting Name="InternetEmailAddress" Type="System.String" Scope="User">
+	  <Value Profile="(Default)" />
+	</Setting>
   </Settings>
 </SettingsFile>

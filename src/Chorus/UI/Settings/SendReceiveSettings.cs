@@ -20,7 +20,7 @@ namespace Chorus.UI.Settings
 			InitializeComponent();
 		}
 
-		public SendReceiveSettings(string repositoryLocation)
+		public SendReceiveSettings(string repositoryLocation, string projectType, string languageId)
 		{
 			InitializeComponent();
 

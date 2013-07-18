@@ -57,15 +57,18 @@ namespace Chorus
 			FinishInit(userNameForHistoryAndNotes, builder);
 		}
 
-		/// <summary>
-		/// Initialize system with user's name.
-		/// </summary>
-		/// <param name="userNameForHistoryAndNotes">This is not the same name as that used for any given network
-		/// repository credentials. Rather, it's the name which will show in the history, and besides Notes that this user makes.
-		///</param>
-		  public void Init(string userNameForHistoryAndNotes)
+		///  <summary>
+		///  Initialize system with user's name.
+		///  </summary>
+		///  <param name="userNameForHistoryAndNotes">This is not the same name as that used for any given network
+		///  repository credentials. Rather, it's the name which will show in the history, and besides Notes that this user makes.
+		/// </param>
+		/// <param name="type">The type of the repository, i.e. flex, dictionary, bloom</param>
+		/// <param name="languageId">The ISOsomebody language code for the project in this repo</param>
+		public void Init(string userNameForHistoryAndNotes, string type, string languageId)
 		{
 			Repository = HgRepository.CreateOrUseExisting(_dataFolderPath, new NullProgress());
+			Repository.SetProjectTypeAndLanguageCode(type, languageId);
 			var builder = InitContainerBuilder();
 
 			if (String.IsNullOrEmpty(userNameForHistoryAndNotes))

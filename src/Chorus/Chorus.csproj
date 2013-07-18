@@ -122,6 +122,7 @@
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
 	<Reference Include="System" />
+	<Reference Include="System.configuration" />
 	<Reference Include="System.Core" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Deployment" />
@@ -166,6 +167,18 @@
 	<Compile Include="UI\Clone\GetSharedProjectDlg.Designer.cs">
 	  <DependentUpon>GetSharedProjectDlg.cs</DependentUpon>
 	</Compile>
+	<Compile Include="UI\Misc\ChangeProjectIDDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="UI\Misc\ChangeProjectIDDialog.Designer.cs">
+	  <DependentUpon>ChangeProjectIDDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="UI\Misc\NewInternetProject.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="UI\Misc\NewInternetProject.Designer.cs">
+	  <DependentUpon>NewInternetProject.cs</DependentUpon>
+	</Compile>
 	<Compile Include="UI\Notes\ChorusNotesDisplaySettings.cs" />
 	<Compile Include="UI\Clone\CloneFromUsb.cs" />
 	<Compile Include="UI\Clone\GetCloneFromChorusHubModel.cs" />
@@ -184,12 +197,6 @@
 	  <DependentUpon>ServerSettingsControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="UI\Clone\GetCloneFromInternetModel.cs" />
-	<Compile Include="UI\Clone\TargetFolderControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="UI\Clone\TargetFolderControl.Designer.cs">
-	  <DependentUpon>TargetFolderControl.cs</DependentUpon>
-	</Compile>
 	<Compile Include="UI\Clone\GetCloneFromInternetDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -315,6 +322,12 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="UI\Clone\GetSharedProjectDlg.resx">
 	  <DependentUpon>GetSharedProjectDlg.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="UI\Misc\ChangeProjectIDDialog.resx">
+	  <DependentUpon>ChangeProjectIDDialog.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="UI\Misc\NewInternetProject.resx">
+	  <DependentUpon>NewInternetProject.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="UI\Review\ChangedReport\ChangeReportView.resx">
 	  <DependentUpon>ChangeReportView.cs</DependentUpon>
@@ -450,10 +463,6 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="UI\Misc\ServerSettingsControl.resx">
 	  <DependentUpon>ServerSettingsControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="UI\Clone\TargetFolderControl.resx">
-	  <DependentUpon>TargetFolderControl.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="UI\Clone\GetCloneFromInternetDialog.resx">
