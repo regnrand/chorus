@@ -56,12 +56,6 @@
 			this._projectIdLabel.TabIndex = 26;
 			this._projectIdLabel.Text = "Project ID";
 			//
-			this.l10NSharpExtender1.SetLocalizableToolTip(this._accountLabel, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this._accountLabel, null);
-			this.l10NSharpExtender1.SetLocalizingId(this._accountLabel, "ServerSettingsControl.Login");
-			this.l10NSharpExtender1.SetLocalizableToolTip(this._passwordLabel, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this._passwordLabel, null);
-			this.l10NSharpExtender1.SetLocalizingId(this._passwordLabel, "ServerSettingsControl.Password");
 			// _projectId
 			//
 			this._projectId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -86,29 +80,6 @@
 			this._customAddress.TabIndex = 29;
 			this.toolTip1.SetToolTip(this._customAddress, "The full address of the custom url for this project");
 			this._customAddress.TextChanged += new System.EventHandler(this.CustomAddressTextChanged);
-			this.l10NSharpExtender1.SetLocalizableToolTip(this._password, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this._password, null);
-			this.l10NSharpExtender1.SetLocalizingId(this._password, "ServerSettingsControl.ServerSettingsControl._password");
-			// _showCharacters
-			//
-			this._showCharacters.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this._showCharacters.AutoSize = true;
-			this.l10NSharpExtender1.SetLocalizableToolTip(this._showCharacters, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this._showCharacters, null);
-			this.l10NSharpExtender1.SetLocalizingId(this._showCharacters, "ServerSettingsControl.ShowCharacters");
-			this._showCharacters.Location = new System.Drawing.Point(83, 173);
-			this._showCharacters.Name = "_showCharacters";
-			this._showCharacters.Size = new System.Drawing.Size(263, 17);
-			this._showCharacters.TabIndex = 30;
-			this._showCharacters.Text = "Show characters";
-			this.toolTip1.SetToolTip(this._showCharacters, "Select this box to display the password.");
-			this._showCharacters.UseVisualStyleBackColor = true;
-			this._showCharacters.CheckedChanged += new System.EventHandler(this._showCharacters_CheckedChanged);
-			//
-			this.l10NSharpExtender1.SetLocalizableToolTip(this._customUrlLabel, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this._customUrlLabel, null);
-			this.l10NSharpExtender1.SetLocalizingId(this._customUrlLabel, "ServerSettingsControl.URL");
 			//
 			// tableLayoutPanel1
 			//
@@ -161,9 +132,9 @@
 			// _customAddressLabel
 			//
 			this._customAddressLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
-			this.l10NSharpExtender1.SetLocalizableToolTip(this._customUrl, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this._customUrl, null);
-			this.l10NSharpExtender1.SetLocalizingId(this._customUrl, "ServerSettingsControl.ServerSettingsControl._customUrl");
+			this.l10NSharpExtender1.SetLocalizableToolTip(this._customAddressLabel, null);
+			this.l10NSharpExtender1.SetLocalizationComment(this._customAddressLabel, null);
+			this.l10NSharpExtender1.SetLocalizingId(this._customAddressLabel, "ServerSettingsControl.ServerSettingsControl._customUrl");
 			this._customAddressLabel.AutoSize = true;
 			this._customAddressLabel.Location = new System.Drawing.Point(32, 76);
 			this._customAddressLabel.Name = "_customAddressLabel";
