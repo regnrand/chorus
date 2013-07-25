@@ -60,6 +60,7 @@ namespace Chorus.UI.Clone
 			_downloadButton.Text = "Download"; //<- Localize this
 			_downloadButton.Top = _okButton.Top;
 			_downloadButton.Left = _okButton.Left;
+			_downloadButton.Click += OnDownloadClick;
 			Controls.Add(_downloadButton);
 			_okButton.TabIndex = 90;
 			_cancelButton.TabIndex = 91;
@@ -196,18 +197,39 @@ namespace Chorus.UI.Clone
 					throw new ArgumentOutOfRangeException();
 			}
 
+			SetupAcceptButton();
 			_serverSettingsControl.Visible = _downloadButton.Visible;
+		}
+
+		private void SetupAcceptButton()
+		{
+			if (_downloadButton.Visible)
+				AcceptButton = _downloadButton;
+			else if (_okButton.Visible)
+				AcceptButton = _okButton;
+			else
+				AcceptButton = null;
 		}
 
 		private void ServerSettingsControlOnDisplayUpdated(object sender, EventArgs eventArgs)
 		{
+			EnableDownloadButtonByProjectId();
 			//_targetFolderControl.UpdateDisplay();
+		}
+
+		private void EnableDownloadButtonByProjectId()
+		{
+			if (String.IsNullOrEmpty(_model.ProjectId))
+				_downloadButton.Enabled = false;
+			else
+				_downloadButton.Enabled = true;
 		}
 
 		private void OnLoad(object sender, EventArgs e)
 		{
 			UpdateDisplay(State.AskingUserForURL);
 			_logBox.BackColor = this.BackColor;
+			EnableDownloadButtonByProjectId();
 		}
 
 		private void _okButton_Click(object sender, EventArgs e)

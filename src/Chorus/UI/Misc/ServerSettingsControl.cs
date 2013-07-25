@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 namespace Chorus.UI.Misc
 {
+
 	///<summary>
 	/// This control lets the user identify the server to use with send/receive,
 	/// including projectId. Normally used with Either ServerSEetingsDialog,
@@ -29,7 +30,9 @@ namespace Chorus.UI.Misc
 			{
 				_model = value;
 				if (value == null)
+				{
 					return;
+				}
 				foreach (KeyValuePair<string, string> pair in Model.Servers)
 				{
 					_serverCombo.Items.Add(pair.Key);
@@ -39,10 +42,29 @@ namespace Chorus.UI.Misc
 				{
 					_projectId.Text = _model.ProjectId;
 				}
-				else
+				else if (!String.IsNullOrEmpty(_model.LanguageId) && !String.IsNullOrEmpty(_model.ProjectType))
 				{
-					_projectId.Text = String.Format("{0}-{1}", _model.LanguageId, _model.ProjectType);
+					_projectId.Text = (String.Format("{0}-{1}", _model.LanguageId, _model.ProjectType));
 				}
+			}
+		}
+
+		private void SetupFormBasedUponProjectId()
+		{
+			if (_projectId.Text.Length == 0)
+			{
+				_projectId.ReadOnly = false;
+				_projectId.Cursor = Cursors.IBeam;
+				_projectId.BackColor = System.Drawing.SystemColors.Window;
+				_projectId.BorderStyle = BorderStyle.Fixed3D;
+				_changeProjectLink.Visible = false;
+			}
+			else
+			{
+				_projectId.ReadOnly = true;
+				_projectId.Cursor = Cursors.Arrow;
+				_projectId.BackColor = System.Drawing.SystemColors.ControlLight;
+				_projectId.BorderStyle = BorderStyle.None;
 			}
 		}
 
@@ -80,6 +102,7 @@ namespace Chorus.UI.Misc
 			if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
 				return;
 
+			SetupFormBasedUponProjectId();
 			UpdateDisplay();
 		}
 
@@ -93,6 +116,15 @@ namespace Chorus.UI.Misc
 					UpdateDisplay();
 				}
 			}
+		}
+
+		private void _projectId_TextChanged(object sender, EventArgs e)
+		{
+			var projectIdtrimmed = _projectId.Text.Trim();
+			if (Model.ProjectId == projectIdtrimmed)
+				return;
+			Model.ProjectId = projectIdtrimmed;
+			UpdateDisplay();
 		}
 	}
 }

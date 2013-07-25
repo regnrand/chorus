@@ -161,13 +161,15 @@ namespace Chorus.UI.Clone
 			try
 			{
 				//review: do we need to get these out of the DoWorkEventArgs instead?
-				var actualCloneLocation = HgRepository.Clone(new HttpRepositoryPath(URL, URL, false), TargetDestination, _progress);
+				//review: should we lookup the ethnologue code in order to provide a "longname" for the project?
+				string languageId = ProjectId.Split('-')[0];
+				string projectDirectory = Path.Combine(ParentDirectoryToPutCloneIn, languageId);
+				var actualCloneLocation = HgRepository.Clone(new HttpRepositoryPath(URL, URL, false), projectDirectory, _progress);
 				LocalFolderName = Path.GetFileName(actualCloneLocation.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
 				using (SoundPlayer player = new SoundPlayer(Properties.Resources.finishedSound))
 				{
 					player.PlaySync();
 				}
-
 			}
 
 			catch (Exception error)
