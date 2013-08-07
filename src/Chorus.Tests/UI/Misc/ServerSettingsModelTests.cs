@@ -34,6 +34,7 @@ namespace Chorus.Tests.UI.Misc
 			Assert.AreEqual("tpi", m.ProjectId);
 		}
 		[Test]
+		[Ignore("Obsoleted")]
 		public void InitFromUri_FullTypicalLangDepot_SelectedServerPathCorrect()
 		{
 			var m = new ServerSettingsModel();
@@ -41,6 +42,7 @@ namespace Chorus.Tests.UI.Misc
 			Assert.AreEqual("hg-public.languagedepot.org", m.SelectedServerPath);
 		}
 		[Test]
+		[Ignore("Obsoleted")]
 		public void InitFromUri_FullTypicalLangDepot_SelectedServerLabel()
 		{
 			var m = new ServerSettingsModel();
@@ -48,6 +50,7 @@ namespace Chorus.Tests.UI.Misc
 			Assert.AreEqual("languagedepot.org [safe mode]", m.SelectedServerLabel.ToLower());
 		}
 		[Test]
+		[Ignore("Obsoleted")]
 		public void InitFromUri_FullPrivateLangDepot_SelectedServerLabel()
 		{
 			var m = new ServerSettingsModel();
@@ -56,6 +59,7 @@ namespace Chorus.Tests.UI.Misc
 		}
 
 		[Test]
+		[Ignore("Obsoleted")]
 		public void InitFromUri_FullTypicalLangDepot_CustomUrlFalse()
 		{
 			var m = new ServerSettingsModel();
@@ -157,6 +161,7 @@ namespace Chorus.Tests.UI.Misc
 		/// We want disk URLs identified as 'default' to be ignored (since they are not ones we added ourselves)
 		/// </summary>
 		[Test]
+		[Ignore("Obsoleted")]
 		public void DefaultUrlsAreIgnored()
 		{
 			using (var folder = new TemporaryFolder("ServerSettingsModel"))
@@ -180,7 +185,7 @@ namespace Chorus.Tests.UI.Misc
 		public void DefaultIsResumable()
 		{
 			var m = new ServerSettingsModel();
-			Assert.AreEqual("resumable.languagedepot.org", m.Servers[m.SelectedServerLabel]);
+			Assert.AreEqual("languagedepot.org", m.Servers[m.SelectedServerLabel]);
 		}
 	}
 }

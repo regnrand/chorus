@@ -377,14 +377,14 @@ namespace Chorus.UI.Sync
 					using (var proj = new NewInternetProject(internetModel))
 					{
 						var result = proj.ShowDialog(this);
-						if (result == DialogResult.OK && !internetModel.CustomUrlSelected)
+						if (result == DialogResult.OK)
 						{
 							address = _repository.GetDefaultNetworkAddress<HttpRepositoryPath>();
 							LanguageDepotApiResponse response = null;
 							try
 							{
 								response = LanguageDepotApi.CreateProject(new Uri(address.URI), internetModel.ProjectId, internetModel.ProjectPassword,
-																		  internetModel.ProjectType, internetModel.ProjectId,
+																		  internetModel.ProjectType, internetModel.LanguageId,
 																		  internetModel.Email);
 							}
 							catch (Exception)
@@ -408,6 +408,11 @@ namespace Chorus.UI.Sync
 								MessageBox.Show(response.ErrorMessage ?? "Unidentified error.", "Error creating project on server.");
 								return;
 							}
+							internetModel.AccountName = internetModel.ProjectId;
+							if (String.IsNullOrEmpty(internetModel.Password))
+								internetModel.Password = LanguageDepotApi.GenerateUnspecifiedPassword(internetModel.ProjectId);
+							if (String.IsNullOrEmpty(internetModel.ProjectPassword))
+								internetModel.ProjectPassword = LanguageDepotApi.GenerateUnspecifiedPassword(internetModel.ProjectId);
 							internetModel.ProjectExistsOnServer = true;
 							internetModel.SaveSettings();
 						}

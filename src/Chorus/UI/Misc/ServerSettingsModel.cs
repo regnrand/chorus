@@ -29,12 +29,14 @@ namespace Chorus.UI.Misc
 		public ServerSettingsModel()
 		{
 			const string languageDepotLabel = "LanguageDepot.org";
+			Servers.Add(languageDepotLabel, "languagedepot.org");
+			/*
 			Servers.Add(languageDepotLabel, "resumable.languagedepot.org");
 			Servers.Add("LanguageDepot.org [Safe Mode]", "hg-public.languagedepot.org");
 			Servers.Add("LanguageDepot.org [private]", "hg-private.languagedepot.org");
 			Servers.Add("LanguageForge", "hg.languageforge.org");
 			Servers.Add("DontCommitMe", "languagedepotapi.local");
-
+			 */
 			Servers.Add(LocalizationManager.GetString("Messages.CustomLocation", "Custom Location..."), "");
 			SelectedServerLabel = languageDepotLabel;
 		}
@@ -99,7 +101,6 @@ namespace Chorus.UI.Misc
 				}
 				else
 				{
-					// If old style account name settings exist build the url with them, otherwise ignore
 					return "http://" + (AccountName != null ? HttpUtilityFromMono.UrlEncode((string)AccountName) + ":" + HttpUtilityFromMono.UrlEncode((string)Password) + "@" : "")
 									 + SelectedServerPath + "/" + HttpUtilityFromMono.UrlEncode(ProjectId);
 				}
@@ -121,15 +122,13 @@ namespace Chorus.UI.Misc
 		}
 
 		/// <summary>
-		/// The user password, only valid for custom servers or old projects
+		/// The user password (for receiving/cloning the project)
 		/// </summary>
-		[Obsolete(@"Older saved configurations still use this")]
 		public string Password { get; set; }
 
 		/// <summary>
-		/// The user account name, only valid for custom servers, or old projects
+		/// The user account name (for receiving/cloning the project)
 		/// </summary>
-		[Obsolete(@"Older saved configurations still use this")]
 		public string AccountName { get; set; }
 
 		/// <summary>

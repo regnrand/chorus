@@ -17,7 +17,7 @@ namespace Chorus.Utilities
 			var inputString = reader.ReadToEnd();
 			var response = new LanguageDepotApiResponse();
 			var jsonRpcResponse = JsonConvert.Import<JsonObject>(inputString);
-			var methodResponse = jsonRpcResponse["response"] as JsonObject;
+			var methodResponse = jsonRpcResponse["result"] as JsonObject;
 			if (methodResponse != null)
 			{
 				response.Identifier = methodResponse["identifier"] as string;

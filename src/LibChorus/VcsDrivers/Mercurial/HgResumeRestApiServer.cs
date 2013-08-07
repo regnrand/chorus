@@ -42,7 +42,7 @@ namespace Chorus.VcsDrivers.Mercurial
 		public HgResumeApiResponse Execute(string method, HgResumeApiParameters parameters, byte[] contentToSend, int secondsBeforeTimeout)
 		{
 			string queryString = parameters.BuildQueryString();
-			_urlExecuted = String.Format("{0}://{1}/api/v{2}/{3}?{4}", _url.Scheme, _url.Host, APIVERSION, method, queryString);
+			_urlExecuted = String.Format("{0}://{1}/api/sendreceive/v{2}/{3}?{4}", _url.Scheme, _url.Host, APIVERSION, method, queryString);
 			var req = WebRequest.Create(_urlExecuted) as HttpWebRequest;
 			req.UserAgent = String.Format("HgResume v{0}", APIVERSION);
 			req.PreAuthenticate = true;

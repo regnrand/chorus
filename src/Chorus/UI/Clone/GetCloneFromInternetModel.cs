@@ -162,9 +162,17 @@ namespace Chorus.UI.Clone
 			{
 				//review: do we need to get these out of the DoWorkEventArgs instead?
 				//review: should we lookup the ethnologue code in order to provide a "longname" for the project?
-				string languageId = ProjectId.Split('-')[0];
-				string projectDirectory = Path.Combine(ParentDirectoryToPutCloneIn, languageId);
-				var actualCloneLocation = HgRepository.Clone(new HttpRepositoryPath(URL, URL, false), projectDirectory, _progress);
+				if (String.IsNullOrEmpty(AccountName))
+					AccountName = ProjectId;
+				if (String.IsNullOrEmpty(Password))
+					Password = LanguageDepotApi.GenerateUnspecifiedPassword(ProjectId);
+				if (String.IsNullOrEmpty(ProjectPassword))
+					ProjectPassword = LanguageDepotApi.GenerateUnspecifiedPassword(ProjectId);
+
+				var address = new HttpRepositoryPath(URL, URL, false);
+				var languageId = ProjectId.Split('-')[0];
+				var projectDirectory = Path.Combine(ParentDirectoryToPutCloneIn, languageId);
+				var actualCloneLocation = HgRepository.Clone(address, projectDirectory, _progress);
 				LocalFolderName = Path.GetFileName(actualCloneLocation.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
 				using (SoundPlayer player = new SoundPlayer(Properties.Resources.finishedSound))
 				{

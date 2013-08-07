@@ -21,16 +21,28 @@ namespace LibChorus.Tests.utilities
 			LanguageDepotApi.Server = testServer;
 		}
 
-		//[Test]
-		//public void LanguageDepotApi_ParseAddress_GeneratesValidUriAndProjectId()
-		//{
-		//    var address = new HttpRepositoryPath("test", "http://user:password@languagedepotapi.local/ignored", true);
-		//    Uri uri = null;
-		//    var projectId = "";
-		//    Assert.DoesNotThrow(() => LanguageDepotApi.ParseAddress(address, out uri, out projectId));
-		//    Assert.That(projectId, Is.EqualTo("ignored"));
-		//    Assert.That(uri.ToString(), Is.EqualTo("http://languagedepotapi.local/src/LanguageDepot/LanguageDepotAPI.php"));
-		//}
+		[Test]
+		public void LanguageDepotApi_RedirectAddressToApiPage_Nochange()
+		{
+			var address = new Uri("http://languagedepotapi.local/api/LanguageDepot/LanguageDepotAPI.php");
+			var uri = LanguageDepotApi.RedirectAddressToApi(address);
+			Assert.That(uri.ToString(), Is.EqualTo("http://languagedepotapi.local/api/LanguageDepot/LanguageDepotAPI.php"));
+		}
+
+		[Test]
+		public void LanguageDepotApi_RedirectAddressToApiPage_Redirected()
+		{
+			var address = new Uri("http://user:password@languagedepotapi.local/ignored");
+			var uri = LanguageDepotApi.RedirectAddressToApi(address);
+			Assert.That(uri.ToString(), Is.EqualTo("http://languagedepotapi.local/api/admin/V01/LanguageDepot/LanguageDepotAPI.php"));
+		}
+
+		[Test]
+		public void LanguageDepotApi_GenerateUnspecifiedPassword()
+		{
+			var password = LanguageDepotApi.GenerateUnspecifiedPassword("en-flex");
+			Assert.That(password, Is.EqualTo("unspecified-en-flex"));
+		}
 
 		[Test]
 		public void LanguageDepotApi_CreateProjectReturnsExpectedId()
@@ -49,7 +61,7 @@ namespace LibChorus.Tests.utilities
 				writer.WriteStartObject();
 				writer.WriteMember("id");
 				writer.WriteNumber(1);
-				writer.WriteMember("response");
+				writer.WriteMember("result");
 					writer.WriteStartObject();
 					writer.WriteMember("status");
 					writer.WriteString("200");
@@ -82,7 +94,7 @@ namespace LibChorus.Tests.utilities
 				writer.WriteStartObject();
 				writer.WriteMember("id");
 				writer.WriteNumber(1);
-				writer.WriteMember("response");
+				writer.WriteMember("result");
 				writer.WriteStartObject();
 				writer.WriteMember("status");
 				writer.WriteString("401");
@@ -109,7 +121,7 @@ namespace LibChorus.Tests.utilities
 			public string ResponseData = null;
 
 			public HttpWebResponse CreateProject(Uri address, string projectName, string projectPassword, string projectType,
-												 string projectId, string email)
+												 string languageId, string email)
 			{
 				return new TestHttpWebResponse(ResponseCode, ResponseData);
 			}

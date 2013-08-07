@@ -87,9 +87,14 @@ namespace Chorus.VcsDrivers
 			IsResumable = IsKnownResumableRepository(uri);
 		}
 
+		/// <summary>
+		/// The plan is for languagedepot.org to only support resumable repositories, and not the legacy transports
+		/// </summary>
+		/// <param name="uri"></param>
+		/// <returns></returns>
 		public static bool IsKnownResumableRepository(string uri)
 		{
-			return uri.ToLower().Contains("hg-test.languageforge.org") || uri.ToLower().Contains("resumable");
+			return  uri.ToLower().Contains("languagedepot.org") || uri.ToLower().Contains("hg-test.languageforge.org") || uri.ToLower().Contains("resumable");
 		}
 
 		/// <summary>
