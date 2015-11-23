@@ -121,14 +121,14 @@ namespace LibChorus.Tests.VcsDrivers.Mercurial
 		}
 
 		[Test]
-		public void CommitWithNoUsernameInHgrcFileUsesDefaultFromEnvironment()
+		public void CommitWithNoUsernameInHgrcFileUsesDefaultFromEnvironmentButWithoutSpaces()
 		{
 			using (var setup = new HgTestSetup())
 			{
 				var path = setup.Root.GetNewTempFile(true).Path;
 				setup.Repository.AddAndCheckinFile(path);
 				var rev = setup.Repository.GetAllRevisions()[0];
-				Assert.AreEqual(Environment.UserName, rev.UserId);
+				Assert.AreEqual(Environment.UserName.Replace(" ", ""), rev.UserId);
 			}
 		}
 
